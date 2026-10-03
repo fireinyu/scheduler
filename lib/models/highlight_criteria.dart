@@ -82,7 +82,9 @@ class HighlightCriteria {
 
     // 3. Incomplete
     if (incompleteOnly) {
-      if (!task.completed) {
+      final isIncomplete = !task.completed ||
+          schedule.getAllSubtasksRecursively(task).any((s) => !s.completed);
+      if (isIncomplete) {
         matches['Incomplete'] = colorIncomplete;
       }
     }
@@ -97,7 +99,9 @@ class HighlightCriteria {
 
     // 5. Assigned to person or set of persons
     if (assigneeIds.isNotEmpty) {
-      if (task.assignees.any((a) => assigneeIds.contains(a))) {
+      final hasAssignee = task.assignees.any((a) => assigneeIds.contains(a)) ||
+          schedule.getAllSubtasksRecursively(task).any((s) => s.assignees.any((a) => assigneeIds.contains(a)));
+      if (hasAssignee) {
         matches['Assigned Team'] = colorAssignees;
       }
     }

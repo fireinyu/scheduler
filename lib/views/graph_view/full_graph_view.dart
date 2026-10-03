@@ -82,17 +82,6 @@ class _FullGraphViewState extends State<FullGraphView> {
                     ),
                   ),
 
-                  // Edges CustomPainter (Dependencies, Subtasks, Deadlines)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: GraphPainter(
-                        nodes: layoutResult.nodes,
-                        edges: layoutResult.edges,
-                        colorScheme: theme.colorScheme,
-                      ),
-                    ),
-                  ),
-
                   // Node Widgets (Tasks and Explicit Deadline Items)
                   ...layoutResult.nodes.values.map((node) {
                     if (node.isDeadline) {
@@ -114,6 +103,7 @@ class _FullGraphViewState extends State<FullGraphView> {
                           schedule: schedule,
                           highlightCriteria: widget.controller.highlightCriteria,
                           isSelected: selectedTask?.taskId == task.taskId,
+                          selectedTaskId: selectedTask?.taskId,
                           onTap: () {
                             // User story 18: Select task to see focused graph view
                             widget.controller.selectTask(task);
@@ -125,11 +115,36 @@ class _FullGraphViewState extends State<FullGraphView> {
                               taskToEdit: task,
                             );
                           },
+                          onTapSubtask: (subtask) {
+                            widget.controller.selectTask(subtask);
+                          },
+                          onDoubleTapSubtask: (subtask) {
+                            TaskEditDialog.show(
+                              context: context,
+                              controller: widget.controller,
+                              taskToEdit: subtask,
+                            );
+                          },
                         ),
                       );
                     }
                     return const SizedBox.shrink();
                   }),
+
+                  // Edges CustomPainter (Dependencies, Subtasks, Deadlines)
+                  // Rendered on top of nodes with IgnorePointer so arrows entering parent cards
+                  // directly into subtasks are fully visible and unobstructed, without blocking gestures.
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: GraphPainter(
+                          nodes: layoutResult.nodes,
+                          edges: layoutResult.edges,
+                          colorScheme: theme.colorScheme,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -7,6 +7,22 @@ enum GraphNodeType {
   deadline,
 }
 
+class SubtaskLayoutInfo {
+  final int taskId;
+  final double topOffset;
+  final double height;
+  final int depth;
+
+  const SubtaskLayoutInfo({
+    required this.taskId,
+    required this.topOffset,
+    required this.height,
+    required this.depth,
+  });
+
+  double get centerY => topOffset + height / 2;
+}
+
 class GraphNode {
   final String id;
   final GraphNodeType type;
@@ -15,6 +31,7 @@ class GraphNode {
 
   // Task node data
   final Task? task;
+  final Map<int, SubtaskLayoutInfo> subtaskLayouts;
 
   // Deadline node data
   final ScheduleDate? deadline;
@@ -26,6 +43,7 @@ class GraphNode {
     this.position = Offset.zero,
     this.size = const Size(260, 110),
     this.task,
+    this.subtaskLayouts = const {},
     this.deadline,
     this.label,
   });
@@ -45,12 +63,16 @@ class GraphEdge {
   final String toId;
   final EdgeType type;
   final String? label;
+  final int? fromTaskId;
+  final int? toTaskId;
 
   const GraphEdge({
     required this.fromId,
     required this.toId,
     required this.type,
     this.label,
+    this.fromTaskId,
+    this.toTaskId,
   });
 
   @override
@@ -60,8 +82,10 @@ class GraphEdge {
           runtimeType == other.runtimeType &&
           fromId == other.fromId &&
           toId == other.toId &&
-          type == other.type;
+          type == other.type &&
+          fromTaskId == other.fromTaskId &&
+          toTaskId == other.toTaskId;
 
   @override
-  int get hashCode => Object.hash(fromId, toId, type);
+  int get hashCode => Object.hash(fromId, toId, type, fromTaskId, toTaskId);
 }

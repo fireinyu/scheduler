@@ -252,6 +252,13 @@ class _TaskCardState extends State<TaskCard> {
                               widget.controller.selectTask(task);
                               widget.onInspectInGraph();
                               break;
+                            case 'duplicate':
+                              TaskEditDialog.show(
+                                context: context,
+                                controller: widget.controller,
+                                templateTask: task,
+                              );
+                              break;
                             case 'delete':
                               _handleDelete();
                               break;
@@ -264,7 +271,17 @@ class _TaskCardState extends State<TaskCard> {
                               children: [
                                 Icon(Icons.add_task, size: 18),
                                 SizedBox(width: 8),
-                                Text('Add Subtask'),
+                                Expanded(child: Text('Add Subtask')),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'duplicate',
+                            child: Row(
+                              children: [
+                                Icon(Icons.copy_all, size: 18),
+                                SizedBox(width: 8),
+                                Expanded(child: Text('Duplicate Task')),
                               ],
                             ),
                           ),
@@ -274,7 +291,7 @@ class _TaskCardState extends State<TaskCard> {
                               children: [
                                 Icon(Icons.edit_outlined, size: 18),
                                 SizedBox(width: 8),
-                                Text('Edit Details'),
+                                Expanded(child: Text('Edit Details')),
                               ],
                             ),
                           ),
@@ -284,7 +301,7 @@ class _TaskCardState extends State<TaskCard> {
                               children: [
                                 Icon(Icons.account_tree_outlined, size: 18),
                                 SizedBox(width: 8),
-                                Text('Inspect in Graph View'),
+                                Expanded(child: Text('Inspect in Graph View')),
                               ],
                             ),
                           ),
@@ -296,9 +313,11 @@ class _TaskCardState extends State<TaskCard> {
                                 Icon(Icons.delete_outline,
                                     size: 18, color: Theme.of(context).colorScheme.error),
                                 const SizedBox(width: 8),
-                                Text(
-                                  'Delete Task',
-                                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                Expanded(
+                                  child: Text(
+                                    'Delete Task',
+                                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                  ),
                                 ),
                               ],
                             ),
