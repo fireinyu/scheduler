@@ -43,6 +43,11 @@
         1
       ],
       "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 5
+      },
       "milestone": 1,
       "priority": 2
     },
@@ -55,6 +60,11 @@
         1
       ],
       "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 5
+      },
       "milestone": 1,
       "priority": 2,
       "note": "Interface only, no implementation"
