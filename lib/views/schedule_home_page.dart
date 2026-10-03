@@ -177,7 +177,7 @@ class _ScheduleHomePageState extends State<ScheduleHomePage> with SingleTickerPr
                       children: [
                         Icon(Icons.restart_alt, size: 18),
                         SizedBox(width: 8),
-                        Text('Reset to Demo Project'),
+                        Expanded(child: Text('Reset to Demo Project')),
                       ],
                     ),
                   ),

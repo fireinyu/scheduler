@@ -12,6 +12,7 @@ class ScheduleController extends ChangeNotifier {
   late ScheduleData _schedule;
   bool _isLoading = true;
   Task? _selectedTask;
+  Task? _lastAddedTask;
   final HighlightCriteria _highlightCriteria = HighlightCriteria();
 
   ScheduleController({StorageService? storageService})
@@ -23,6 +24,22 @@ class ScheduleController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   Task? get selectedTask => _selectedTask;
   HighlightCriteria get highlightCriteria => _highlightCriteria;
+
+  /// User story: When I add a new task, the values from the most recently added task are used by default
+  Task? get mostRecentlyAddedTask {
+    if (_lastAddedTask != null) {
+      final found = _schedule.findTaskById(_lastAddedTask!.taskId);
+      if (found != null) return found;
+    }
+    final all = _schedule.getAllTasks();
+    if (all.isEmpty) return null;
+    return all.reduce((a, b) => a.taskId > b.taskId ? a : b);
+  }
+
+  set mostRecentlyAddedTask(Task? task) {
+    _lastAddedTask = task;
+    notifyListeners();
+  }
 
   /// User story 14: Whenever I launch the app, the schedule is loaded automatically
   Future<void> init() async {
@@ -83,6 +100,7 @@ class ScheduleController extends ChangeNotifier {
     }
 
     _schedule.tasks.add(task);
+    _lastAddedTask = task;
     await _saveToDisk();
     notifyListeners();
   }
@@ -120,6 +138,7 @@ class ScheduleController extends ChangeNotifier {
     }
 
     parent.subtasks.add(subtask);
+    _lastAddedTask = subtask;
     await _saveToDisk();
     notifyListeners();
   }

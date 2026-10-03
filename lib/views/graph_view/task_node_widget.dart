@@ -294,36 +294,36 @@ class TaskNodeWidget extends StatelessWidget {
             color: isOverdue ? theme.colorScheme.error : theme.colorScheme.primary,
           ),
           const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              deadline.formatted,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: isOverdue ? theme.colorScheme.error : null,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            deadline.formatted,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: isOverdue ? theme.colorScheme.error : null,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
+        if (deadline != null && milestone != null) const Spacer(),
         if (milestone != null) ...[
-          const SizedBox(width: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.6),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              milestone.name,
-              style: TextStyle(
-                fontSize: 10,
-                color: theme.colorScheme.onTertiaryContainer,
-                fontWeight: FontWeight.w600,
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(4),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              child: Text(
+                milestone.name,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: theme.colorScheme.onTertiaryContainer,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],

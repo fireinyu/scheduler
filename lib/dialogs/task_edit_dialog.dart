@@ -12,12 +12,14 @@ class TaskEditDialog extends StatefulWidget {
   final ScheduleController controller;
   final Task? taskToEdit;
   final int? parentTaskId; // If creating a subtask
+  final Task? templateTask; // Explicit task to duplicate values from
 
   const TaskEditDialog({
     super.key,
     required this.controller,
     this.taskToEdit,
     this.parentTaskId,
+    this.templateTask,
   });
 
   static Future<void> show({
@@ -25,6 +27,7 @@ class TaskEditDialog extends StatefulWidget {
     required ScheduleController controller,
     Task? taskToEdit,
     int? parentTaskId,
+    Task? templateTask,
   }) {
     return showDialog(
       context: context,
@@ -33,6 +36,7 @@ class TaskEditDialog extends StatefulWidget {
         controller: controller,
         taskToEdit: taskToEdit,
         parentTaskId: parentTaskId,
+        templateTask: templateTask,
       ),
     );
   }
@@ -52,6 +56,7 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
   late Set<int> _selectedAssignees;
   late Set<int> _selectedDependencies;
   bool _completed = false;
+  Task? _selectedTemplateTask;
 
   late TabController _noteTabController;
 
@@ -59,31 +64,83 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
   void initState() {
     super.initState();
     final task = widget.taskToEdit;
-    _nameController = TextEditingController(text: task?.name ?? '');
-    _workloadController = TextEditingController(
-      text: task?.workload != null ? task!.workload.toString() : '',
-    );
-    _priorityController = TextEditingController(
-      text: task?.priority != null ? task!.priority.toString() : '',
-    );
-    _noteController = TextEditingController(text: task?.note ?? '');
 
-    _deadline = task?.deadline;
-    _selectedMilestone = task?.milestone;
-    _selectedAssignees = task != null ? Set.from(task.assignees) : {};
-    _selectedDependencies = task != null ? Set.from(task.dependencies) : {};
-    _completed = task?.completed ?? false;
+    if (task != null) {
+      _nameController = TextEditingController(text: task.name);
+      _workloadController = TextEditingController(
+        text: task.workload != null ? task.workload.toString() : '',
+      );
+      _priorityController = TextEditingController(
+        text: task.priority != null ? task.priority.toString() : '',
+      );
+      _noteController = TextEditingController(text: task.note ?? '');
 
-    // If adding subtask and milestone is null, default from parent
-    if (task == null && widget.parentTaskId != null) {
-      final parent = widget.controller.schedule.findTaskById(widget.parentTaskId!);
-      if (parent != null) {
-        _selectedMilestone ??= parent.milestone;
-        _selectedAssignees.addAll(parent.assignees);
+      _deadline = task.deadline;
+      _selectedMilestone = task.milestone;
+      _selectedAssignees = Set.from(task.assignees);
+      _selectedDependencies = Set.from(task.dependencies);
+      _completed = task.completed;
+      _selectedTemplateTask = null;
+    } else {
+      // User story: Default values from most recently added task or explicit template task
+      final template = widget.templateTask ?? widget.controller.mostRecentlyAddedTask;
+      _selectedTemplateTask = template;
+
+      _nameController = TextEditingController(
+        text: template != null ? '${template.name} (Copy)' : '',
+      );
+      _workloadController = TextEditingController(
+        text: template?.workload != null ? template!.workload.toString() : '',
+      );
+      _priorityController = TextEditingController(
+        text: template?.priority != null ? template!.priority.toString() : '',
+      );
+      _noteController = TextEditingController(text: template?.note ?? '');
+
+      _deadline = template?.deadline;
+      _selectedMilestone = template?.milestone;
+      _selectedAssignees = template != null ? Set.from(template.assignees) : {};
+      _selectedDependencies = template != null ? Set.from(template.dependencies) : {};
+      _completed = false;
+
+      // If adding subtask and milestone is null, default from parent
+      if (widget.parentTaskId != null) {
+        final parent = widget.controller.schedule.findTaskById(widget.parentTaskId!);
+        if (parent != null) {
+          _selectedMilestone ??= parent.milestone;
+          if (_selectedAssignees.isEmpty) {
+            _selectedAssignees.addAll(parent.assignees);
+          }
+        }
       }
     }
 
     _noteTabController = TabController(length: 2, vsync: this);
+  }
+
+  void _applyTemplate(Task? template) {
+    setState(() {
+      _selectedTemplateTask = template;
+      if (template != null) {
+        _nameController.text = '${template.name} (Copy)';
+        _workloadController.text = template.workload != null ? template.workload.toString() : '';
+        _priorityController.text = template.priority != null ? template.priority.toString() : '';
+        _noteController.text = template.note ?? '';
+        _deadline = template.deadline;
+        _selectedMilestone = template.milestone;
+        _selectedAssignees = Set.from(template.assignees);
+        _selectedDependencies = Set.from(template.dependencies);
+      } else {
+        _nameController.clear();
+        _workloadController.clear();
+        _priorityController.clear();
+        _noteController.clear();
+        _deadline = null;
+        _selectedMilestone = null;
+        _selectedAssignees.clear();
+        _selectedDependencies.clear();
+      }
+    });
   }
 
   @override
@@ -261,6 +318,75 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // User story: Duplicate values from other tasks
+                      if (!isEditing) ...[
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: theme.colorScheme.outlineVariant),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.copy_all, size: 16, color: theme.colorScheme.primary),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Duplicate values from task:',
+                                    style: theme.textTheme.labelMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  if (_selectedTemplateTask != null)
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        visualDensity: VisualDensity.compact,
+                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      ),
+                                      onPressed: () => _applyTemplate(null),
+                                      child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              SearchableDropdown<Task?>(
+                                labelText: 'Template Task',
+                                hintText: 'Select task to duplicate values...',
+                                value: _selectedTemplateTask,
+                                items: [
+                                  const SearchableItem<Task?>(
+                                    value: null,
+                                    label: 'None (Blank Task)',
+                                    isNoneOption: true,
+                                  ),
+                                  ...widget.controller.schedule.getAllTasks().map((t) {
+                                    return SearchableItem<Task?>(
+                                      value: t,
+                                      label: '#${t.taskId} ${t.name}',
+                                      subtitle: 'Workload: ${t.workload ?? '-'}h • Priority: ${t.priority ?? '-'}',
+                                      leading: Icon(
+                                        t.completed ? Icons.check_circle : Icons.task_alt,
+                                        color: theme.colorScheme.primary,
+                                        size: 16,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (picked) {
+                                  _applyTemplate(picked);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+
                       // Task Name
                       TextField(
                         controller: _nameController,

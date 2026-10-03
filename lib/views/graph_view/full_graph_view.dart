@@ -82,17 +82,6 @@ class _FullGraphViewState extends State<FullGraphView> {
                     ),
                   ),
 
-                  // Edges CustomPainter (Dependencies, Subtasks, Deadlines)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: GraphPainter(
-                        nodes: layoutResult.nodes,
-                        edges: layoutResult.edges,
-                        colorScheme: theme.colorScheme,
-                      ),
-                    ),
-                  ),
-
                   // Node Widgets (Tasks and Explicit Deadline Items)
                   ...layoutResult.nodes.values.map((node) {
                     if (node.isDeadline) {
@@ -141,6 +130,21 @@ class _FullGraphViewState extends State<FullGraphView> {
                     }
                     return const SizedBox.shrink();
                   }),
+
+                  // Edges CustomPainter (Dependencies, Subtasks, Deadlines)
+                  // Rendered on top of nodes with IgnorePointer so arrows entering parent cards
+                  // directly into subtasks are fully visible and unobstructed, without blocking gestures.
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: GraphPainter(
+                          nodes: layoutResult.nodes,
+                          edges: layoutResult.edges,
+                          colorScheme: theme.colorScheme,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

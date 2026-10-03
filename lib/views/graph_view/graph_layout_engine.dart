@@ -49,6 +49,37 @@ class GraphLayoutEngine {
     return h;
   }
 
+  /// Calculates the dynamic layout and anchor offsets for subtasks inside a parent task node.
+  static Map<int, SubtaskLayoutInfo> calculateSubtaskLayouts(Task parentTask) {
+    final result = <int, SubtaskLayoutInfo>{};
+    if (parentTask.subtasks.isEmpty) return result;
+
+    // Matches TaskNodeWidget layout:
+    // Base container padding top (8) + parent info padding (2) + content (70) + padding (2) + space (4)
+    // + divider (12) + subtasks header (16) + space (6) = 120.0
+    double currentY = 120.0;
+
+    void process(Task sub, int depth) {
+      const cardHeight = 47.0;
+      result[sub.taskId] = SubtaskLayoutInfo(
+        taskId: sub.taskId,
+        topOffset: currentY,
+        height: cardHeight,
+        depth: depth,
+      );
+      currentY += cardHeight + 6.0;
+
+      for (final child in sub.subtasks) {
+        process(child, depth + 1);
+      }
+    }
+
+    for (final sub in parentTask.subtasks) {
+      process(sub, 0);
+    }
+    return result;
+  }
+
   static GraphLayoutResult layout(ScheduleData schedule) {
     // Only top-level tasks are graph nodes! Subtasks are nested inside their parent cards.
     final topLevelTasks = schedule
@@ -142,10 +173,12 @@ class GraphLayoutEngine {
     for (final task in topLevelTasks) {
       final nodeId = 'task_${task.taskId}';
       final h = calculateTaskNodeHeight(task);
+      final subLayouts = calculateSubtaskLayouts(task);
       nodes[nodeId] = GraphNode(
         id: nodeId,
         type: GraphNodeType.task,
         task: task,
+        subtaskLayouts: subLayouts,
         size: Size(nodeWidth, h),
       );
     }
@@ -198,6 +231,7 @@ class GraphLayoutEngine {
           edges.add(GraphEdge(
             fromId: 'task_${t.taskId}',
             toId: dlNodeId,
+            fromTaskId: t.taskId,
             type: EdgeType.deadline,
             label: 'Due by',
           ));
@@ -205,20 +239,30 @@ class GraphLayoutEngine {
       }
     }
 
-    // 4. Create Task Dependency Edges between top-level nodes
+    // 4. Create Task Dependency Edges between nodes (subtasks start or end at the subtask directly)
     final addedEdges = <String>{};
-    for (final task in topLevelTasks) {
-      final toId = 'task_${task.taskId}';
-      final prereqTopIds = getEffectivePrerequisiteTopIds(task);
-      for (final pId in prereqTopIds) {
-        final fromId = 'task_$pId';
-        if (nodes.containsKey(fromId)) {
-          final edgeKey = '$fromId->$toId';
+    final allTasks = schedule.getAllTasks();
+
+    for (final task in allTasks) {
+      for (final depId in task.dependencies) {
+        final prereqTask = schedule.findTaskById(depId);
+        if (prereqTask == null) continue;
+
+        final fromTop = findTopLevelParent(prereqTask);
+        final toTop = findTopLevelParent(task);
+
+        final fromId = 'task_${fromTop.taskId}';
+        final toId = 'task_${toTop.taskId}';
+
+        if (nodes.containsKey(fromId) && nodes.containsKey(toId)) {
+          final edgeKey = '${prereqTask.taskId}->${task.taskId}';
           if (!addedEdges.contains(edgeKey)) {
             addedEdges.add(edgeKey);
             edges.add(GraphEdge(
               fromId: fromId,
               toId: toId,
+              fromTaskId: prereqTask.taskId,
+              toTaskId: task.taskId,
               type: EdgeType.dependency,
               label: 'requisite',
             ));

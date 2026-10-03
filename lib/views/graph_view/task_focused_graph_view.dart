@@ -67,6 +67,17 @@ class TaskFocusedGraphView extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.copy_all),
+            tooltip: 'Duplicate Task',
+            onPressed: () {
+              TaskEditDialog.show(
+                context: context,
+                controller: controller,
+                templateTask: currentTask,
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit Task',
             onPressed: () {

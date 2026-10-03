@@ -18,7 +18,7 @@ class GraphPainter extends CustomPainter {
     if (nodes.isEmpty || edges.isEmpty) return;
 
     // 1. Group outgoing and incoming edges to distribute connection anchors
-    // along the right and left boundaries of each node, avoiding overlapping edges.
+    // along the boundaries of each node, avoiding overlapping edges.
     final outEdgesMap = <String, List<GraphEdge>>{};
     final inEdgesMap = <String, List<GraphEdge>>{};
 
@@ -53,32 +53,37 @@ class GraphPainter extends CustomPainter {
       final toNode = nodes[edge.toId];
       if (fromNode == null || toNode == null) continue;
 
-      // Staggered source anchor on the right side of fromNode
       final outList = outEdgesMap[edge.fromId] ?? [edge];
-      final outIndex = outList.indexOf(edge);
-      final outRatio = (outIndex + 1) / (outList.length + 1);
-      final start = Offset(
-        fromNode.position.dx + fromNode.size.width,
-        fromNode.position.dy + fromNode.size.height * outRatio,
-      );
-
-      // Staggered target anchor on the left side of toNode
       final inList = inEdgesMap[edge.toId] ?? [edge];
-      final inIndex = inList.indexOf(edge);
-      final inRatio = (inIndex + 1) / (inList.length + 1);
-      final end = Offset(
-        toNode.position.dx,
-        toNode.position.dy + toNode.size.height * inRatio,
+      final isIntraNode = fromNode.id == toNode.id;
+
+      // Anchors: subtasks start or end directly at the subtask card
+      final start = _getAnchorPoint(
+        node: fromNode,
+        taskId: edge.fromTaskId,
+        isSource: true,
+        groupEdges: outList,
+        edge: edge,
+        isIntraNode: isIntraNode,
       );
 
-      // Compute obstacle-avoiding path that routes around intermediate task cards
+      final end = _getAnchorPoint(
+        node: toNode,
+        taskId: edge.toTaskId,
+        isSource: false,
+        groupEdges: inList,
+        edge: edge,
+        isIntraNode: isIntraNode,
+      );
+
+      // Compute obstacle-avoiding path that routes cleanly
       final path = _computeObstacleAvoidingPath(start, end, fromNode, toNode);
 
       // Draw according to edge type (all edges are arrows pointing from left to right)
       switch (edge.type) {
         case EdgeType.dependency:
           final paint = Paint()
-            ..color = colorScheme.primary.withValues(alpha: 0.75)
+            ..color = colorScheme.primary.withValues(alpha: 0.85)
             ..strokeWidth = 2.0
             ..style = PaintingStyle.stroke;
           canvas.drawPath(path, paint);
@@ -95,7 +100,7 @@ class GraphPainter extends CustomPainter {
           break;
 
         case EdgeType.deadline:
-          // User Story 16: "All edges in the graph view are arrow that must point from left to right, including the edges to deadlines"
+          // User Story 16: All edges point from left to right to deadlines
           final paint = Paint()
             ..color = Colors.deepOrange.withValues(alpha: 0.85)
             ..strokeWidth = 2.0
@@ -107,12 +112,91 @@ class GraphPainter extends CustomPainter {
     }
   }
 
+  Offset _getAnchorPoint({
+    required GraphNode node,
+    int? taskId,
+    required bool isSource,
+    required List<GraphEdge> groupEdges,
+    required GraphEdge edge,
+    required bool isIntraNode,
+  }) {
+    if (node.isDeadline) {
+      final index = groupEdges.indexOf(edge);
+      final ratio = (index + 1) / (groupEdges.length + 1);
+      return Offset(
+        isSource ? node.position.dx + node.size.width : node.position.dx,
+        node.position.dy + node.size.height * ratio,
+      );
+    }
+
+    // Check if taskId refers to a subtask inside this node
+    if (taskId != null && node.subtaskLayouts.containsKey(taskId)) {
+      final sub = node.subtaskLayouts[taskId]!;
+      // Find position among edges connected to the exact same subtask
+      final sameSubEdges = groupEdges
+          .where((e) => (isSource ? e.fromTaskId : e.toTaskId) == taskId)
+          .toList();
+      final index = sameSubEdges.indexOf(edge);
+      final count = sameSubEdges.length;
+      final subJitter = count > 1 ? (index - (count - 1) / 2.0) * 8.0 : 0.0;
+      final y = node.position.dy + sub.centerY + subJitter;
+
+      if (isIntraNode) {
+        return Offset(node.position.dx + 10.0 + sub.depth * 8.0, y);
+      }
+
+      if (isSource) {
+        // Arrow starts at the subtask directly (right edge of subtask card)
+        return Offset(node.position.dx + node.size.width - 10.0, y);
+      } else {
+        // Arrow ends at the subtask directly (left edge of subtask card)
+        return Offset(node.position.dx + 10.0 + sub.depth * 8.0, y);
+      }
+    }
+
+    // Default to parent task anchor
+    final sameTargetEdges = groupEdges
+        .where((e) => (isSource ? e.fromTaskId : e.toTaskId) == node.task?.taskId)
+        .toList();
+    final index = sameTargetEdges.indexOf(edge);
+    final count = sameTargetEdges.isNotEmpty ? sameTargetEdges.length : groupEdges.length;
+    final parentIdx = index >= 0 ? index : groupEdges.indexOf(edge);
+
+    if (node.task != null && node.task!.subtasks.isNotEmpty) {
+      // Parent with subtasks: parent info area is at top ~74px (center ~45px)
+      final jitter = count > 1 ? (parentIdx - (count - 1) / 2.0) * 8.0 : 0.0;
+      final y = node.position.dy + 45.0 + jitter;
+      return Offset(
+        isSource ? node.position.dx + node.size.width : node.position.dx,
+        y,
+      );
+    }
+
+    final ratio = (parentIdx + 1) / (count + 1);
+    return Offset(
+      isSource ? node.position.dx + node.size.width : node.position.dx,
+      node.position.dy + node.size.height * ratio,
+    );
+  }
+
   Path _computeObstacleAvoidingPath(
     Offset start,
     Offset end,
     GraphNode fromNode,
     GraphNode toNode,
   ) {
+    if (fromNode.id == toNode.id) {
+      // Intra-node subtask dependency curve
+      final loopLeft = min(start.dx, end.dx) - 24.0;
+      return Path()
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(
+          loopLeft, start.dy,
+          loopLeft, end.dy,
+          end.dx, end.dy,
+        );
+    }
+
     final minX = min(start.dx, end.dx) + 8.0;
     final maxX = max(start.dx, end.dx) - 8.0;
 
