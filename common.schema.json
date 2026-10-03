@@ -1,0 +1,119 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "com.fireinyu.scheduler.common",
+    "title": "Common definitions",
+    "$defs": {
+        "date": {
+            "description": "an instant in time to the granularity of 1 hour, 1 day or 1 month",
+            "type": "object",
+            "properties": {
+                "year": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "integer"
+                },   
+                "day": {
+                    "type": "integer"
+                },
+                "hour": {
+                    "type": "integer"
+                }                            
+            },
+            "required": ["year", "month"]
+        },
+        "person": {
+            "description": "a member of the team",
+            "type": "object",
+            "properties": {
+                "personId": {
+                    "description": "unique identifier of this person",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "name of this person",
+                    "type": "string"
+                }
+            },
+            "required": ["personId", "name"]
+        },    
+        "milestone": {
+            "description": "a milestone of the project",
+            "type": "object",
+            "properties": {
+                "milestoneId": {
+                    "description": "unique identifier of this milestone",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "name of this milestone",
+                    "type": "string"
+                }
+            },
+            "required": ["milestoneId", "name"]
+        },    
+        "task": {
+            "description": "",
+            "type": "object",
+            "properties": {         
+                "taskId": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "",
+                    "type": "string"
+                },
+                "workload": {
+                    "description": "number of man-hours to complete this task",
+                    "type": "integer"
+                },
+                "deadline": {
+                    "description": "Date that this task must be completed by. The specific instant is given by the end of the date's granularity interval.",
+                    "$ref": "#/$defs/date"
+                    
+                },                
+                "dependencies": {
+                    "description": "other tasks that this task is directly dependent on",
+                    "type": "array",
+                    "items": {
+                        "description": "id of requisite task",
+                        "type": "integer"
+                    }
+                },
+                "subtasks": {
+                    "description": "smaller tasks that comprise this task",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/task"
+                    }
+                },
+                "assignees": {
+                    "description": "The personIds of the teammates assigned to complete this task. For each subtask, they are responsible for ensuring that it is completed by its assignees.",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "milestone": {
+                    "description": "the milestoneId of the milestone this task is assigned to",
+                    "type": "integer"
+                },
+                "priority": {
+                    "description": "the priority of this task when it is not overdue, higher number means higher priority",
+                    "type": "integer"
+                },
+                "completed": {
+                    "description": "whether this task has been completed",
+                    "type": "boolean"
+                },
+                "note": {
+                    "description": "additional information about the task, in markdown",
+                    "type": "string"
+                }
+            },
+            "required": ["taskId", "name", "dependencies", "subtasks", "assignees", "completed"]
+        }
+        
+    }
+}

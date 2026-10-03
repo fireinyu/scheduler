@@ -1,0 +1,27 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "com.fireinyu.scheduler.common",
+    "title": "App storage format",
+    "type": "object",
+    "properties": {
+        "teammates": {
+            "type": "array",
+            "items": {
+                "$ref": "common.schema.json#/$defs/person"
+            }
+        },
+        "milestones": {
+            "type": "array",
+            "items": {
+                "$ref": "common.schema.json#/$defs/milestone"
+            }
+        },
+        "tasks": {
+            "type": "array",
+            "items": {
+                "$ref": "common.schema.json#/$defs/task"
+            }
+        }
+    },
+    "required": ["teammates", "milestones",  "tasks"]
+}

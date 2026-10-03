@@ -1,0 +1,6 @@
+{
+    "project": "A collection of tasks that can be completed. The project is completed when all its tasks are completed.",
+    "team": "A group of persons working on the same project.",
+    "deadline": "A task's deadline can be explicitly set. Otherwise, the task's deadline is the minimum of the deadlines of the tasks that depend on it and its milestone",
+    "overdue": "A task is overdue if the current datetime exceeds its deadline"
+}
