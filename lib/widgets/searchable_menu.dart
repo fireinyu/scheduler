@@ -157,6 +157,7 @@ class _SearchableMenuDialogState<T> extends State<SearchableMenuDialog<T>> {
     );
 
     return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440, maxHeight: 520),
@@ -418,6 +419,7 @@ class _SearchableMultiMenuDialogState<T> extends State<_SearchableMultiMenuDialo
     );
 
     return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460, maxHeight: 540),

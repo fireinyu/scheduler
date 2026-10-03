@@ -113,8 +113,15 @@ class _TaskCardState extends State<TaskCard> {
 
     final hasSubtasks = task.subtasks.isNotEmpty;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isNarrow = screenWidth < 500;
+
     return Padding(
-      padding: EdgeInsets.only(left: widget.depth * 20.0, top: 4, bottom: 4),
+      padding: EdgeInsets.only(
+        left: widget.depth * (isNarrow ? 12.0 : 20.0),
+        top: 4,
+        bottom: 4,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -193,14 +200,14 @@ class _TaskCardState extends State<TaskCard> {
                             color: theme.colorScheme.error,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.error_outline, size: 13, color: Colors.white),
-                              SizedBox(width: 4),
+                              const Icon(Icons.error_outline, size: 13, color: Colors.white),
+                              const SizedBox(width: 4),
                               Text(
-                                'OVERDUE (Highest Priority)',
-                                style: TextStyle(
+                                isNarrow ? 'OVERDUE' : 'OVERDUE (Highest Priority)',
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
@@ -329,7 +336,7 @@ class _TaskCardState extends State<TaskCard> {
 
                   // Row 2: Metadata tags (Deadline, Milestone, Workload, Assignees)
                   Padding(
-                    padding: const EdgeInsets.only(left: 36, top: 4),
+                    padding: EdgeInsets.only(left: isNarrow ? 8 : 36, top: 4),
                     child: Wrap(
                       spacing: 8,
                       runSpacing: 4,
@@ -354,14 +361,17 @@ class _TaskCardState extends State<TaskCard> {
                                   color: isOverdue ? theme.colorScheme.error : theme.colorScheme.primary,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  task.deadline != null
-                                      ? effectiveDeadline.formatted
-                                      : 'Inferred: ${effectiveDeadline.formatted}',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: isOverdue ? theme.colorScheme.error : null,
+                                Flexible(
+                                  child: Text(
+                                    task.deadline != null
+                                        ? effectiveDeadline.formatted
+                                        : 'Inferred: ${effectiveDeadline.formatted}',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: isOverdue ? theme.colorScheme.error : null,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -381,12 +391,15 @@ class _TaskCardState extends State<TaskCard> {
                               children: [
                                 Icon(Icons.flag, size: 12, color: theme.colorScheme.tertiary),
                                 const SizedBox(width: 4),
-                                Text(
-                                  milestone.name,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: theme.colorScheme.onTertiaryContainer,
+                                Flexible(
+                                  child: Text(
+                                    milestone.name,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      color: theme.colorScheme.onTertiaryContainer,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],

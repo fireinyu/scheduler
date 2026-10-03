@@ -276,12 +276,19 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
     final milestones = widget.controller.schedule.milestones;
     final dependencyCandidates = _getEligibleDependencyCandidates();
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Dialog(
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 12 : 40,
+        vertical: isMobile ? 16 : 24,
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 620, maxHeight: 780),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(isMobile ? 14 : 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -289,20 +296,26 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        isSubtask ? Icons.subdirectory_arrow_right : Icons.assignment_outlined,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        isEditing
-                            ? 'Edit ${isSubtask ? "Subtask" : "Task"}'
-                            : 'Add ${isSubtask ? "Subtask" : "Task"}',
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          isSubtask ? Icons.subdirectory_arrow_right : Icons.assignment_outlined,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            isEditing
+                                ? 'Edit ${isSubtask ? "Subtask" : "Task"}'
+                                : 'Add ${isSubtask ? "Subtask" : "Task"}',
+                            style: (isMobile ? theme.textTheme.titleMedium : theme.textTheme.titleLarge)
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -335,14 +348,16 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                                 children: [
                                   Icon(Icons.copy_all, size: 16, color: theme.colorScheme.primary),
                                   const SizedBox(width: 6),
-                                  Text(
-                                    'Duplicate values from task:',
-                                    style: theme.textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.primary,
+                                  Expanded(
+                                    child: Text(
+                                      isMobile ? 'Duplicate from:' : 'Duplicate values from task:',
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const Spacer(),
                                   if (_selectedTemplateTask != null)
                                     TextButton(
                                       style: TextButton.styleFrom(
@@ -407,11 +422,11 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                               controller: _workloadController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: const InputDecoration(
-                                labelText: 'Workload (man-hours)',
+                              decoration: InputDecoration(
+                                labelText: isMobile ? 'Workload (hrs)' : 'Workload (man-hours)',
                                 hintText: 'e.g. 10',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.timer_outlined, size: 20),
+                                border: const OutlineInputBorder(),
+                                prefixIcon: const Icon(Icons.timer_outlined, size: 20),
                               ),
                             ),
                           ),
@@ -421,11 +436,11 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                               controller: _priorityController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: const InputDecoration(
-                                labelText: 'Priority (higher = urgent)',
+                              decoration: InputDecoration(
+                                labelText: isMobile ? 'Priority' : 'Priority (higher = urgent)',
                                 hintText: 'e.g. 1, 2, 3',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.priority_high, size: 20),
+                                border: const OutlineInputBorder(),
+                                prefixIcon: const Icon(Icons.priority_high, size: 20),
                               ),
                             ),
                           ),
@@ -434,31 +449,46 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                       const SizedBox(height: 16),
 
                       // Deadline selector with granularity
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          Icons.event,
-                          color: _deadline != null ? theme.colorScheme.primary : null,
-                        ),
-                        title: Text(
-                          _deadline != null
-                              ? 'Deadline: ${_deadline!.formatted}'
-                              : 'No Explicit Deadline',
-                          style: TextStyle(
-                            fontWeight: _deadline != null ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                        subtitle: Text(
-                          _deadline != null
-                              ? 'Instant: ${_deadline!.endInstant.toLocal().toString().replaceAll('.000', '')}'
-                              : 'Will infer minimum of dependent tasks and milestone',
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
                           children: [
+                            Icon(
+                              Icons.event,
+                              color: _deadline != null ? theme.colorScheme.primary : null,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _deadline != null
+                                        ? 'Deadline: ${_deadline!.formatted}'
+                                        : 'No Explicit Deadline',
+                                    style: TextStyle(
+                                      fontWeight: _deadline != null ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    _deadline != null
+                                        ? 'Instant: ${_deadline!.endInstant.toLocal().toString().replaceAll('.000', '')}'
+                                        : 'Will infer minimum of dependent tasks and milestone',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.outline,
+                                      fontSize: 11,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
                             if (_deadline != null)
                               IconButton(
-                                icon: const Icon(Icons.clear, size: 20),
+                                icon: const Icon(Icons.clear, size: 18),
                                 tooltip: 'Clear Deadline',
                                 onPressed: () {
                                   setState(() => _deadline = null);
@@ -466,7 +496,7 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
                               ),
                             OutlinedButton.icon(
                               icon: const Icon(Icons.calendar_month, size: 16),
-                              label: Text(_deadline == null ? 'Set Deadline' : 'Change'),
+                              label: Text(_deadline == null ? (isMobile ? 'Set' : 'Set Deadline') : 'Change'),
                               onPressed: () async {
                                 final picked = await ScheduleDatePickerDialog.show(
                                   context,
@@ -628,14 +658,15 @@ class _TaskEditDialogState extends State<TaskEditDialog> with SingleTickerProvid
 
               const SizedBox(height: 16),
               // Action Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
-                  const SizedBox(width: 8),
                   FilledButton(
                     onPressed: _save,
                     child: Text(isEditing ? 'Save Changes' : 'Create Task'),

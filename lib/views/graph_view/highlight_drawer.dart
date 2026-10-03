@@ -6,8 +6,9 @@ import '../../dialogs/date_picker_dialog.dart';
 
 class HighlightDrawer extends StatefulWidget {
   final ScheduleController controller;
+  final VoidCallback? onClose;
 
-  const HighlightDrawer({super.key, required this.controller});
+  const HighlightDrawer({super.key, required this.controller, this.onClose});
 
   @override
   State<HighlightDrawer> createState() => _HighlightDrawerState();
@@ -22,16 +23,19 @@ class _HighlightDrawerState extends State<HighlightDrawer> {
     final milestones = schedule.milestones;
     final teammates = schedule.teammates;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final drawerWidth = screenWidth < 360 ? screenWidth : 340.0;
+
     return Material(
       color: theme.colorScheme.surface,
       child: SizedBox(
-        width: 340,
+        width: drawerWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
@@ -55,6 +59,12 @@ class _HighlightDrawerState extends State<HighlightDrawer> {
                         });
                       },
                       child: const Text('Reset'),
+                    ),
+                  if (widget.onClose != null)
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Close highlights panel',
+                      onPressed: widget.onClose,
                     ),
                 ],
               ),

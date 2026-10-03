@@ -81,17 +81,28 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
 
     final curr = _currentDate;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 500;
+
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      contentPadding: EdgeInsets.fromLTRB(isMobile ? 16 : 24, 16, isMobile ? 16 : 24, 16),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       title: const Row(
         children: [
           Icon(Icons.calendar_month),
           SizedBox(width: 8),
-          Text('Select Deadline'),
+          Flexible(
+            child: Text(
+              'Select Deadline',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
       content: SingleChildScrollView(
-        child: SizedBox(
-          width: 400,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,30 +112,38 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
                 style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
-              SegmentedButton<DateGranularity>(
-                segments: const [
-                  ButtonSegment(
-                    value: DateGranularity.month,
-                    label: Text('Month'),
-                    icon: Icon(Icons.calendar_view_month),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: SegmentedButton<DateGranularity>(
+                  showSelectedIcon: false,
+                  style: const ButtonStyle(
+                    visualDensity: VisualDensity.compact,
                   ),
-                  ButtonSegment(
-                    value: DateGranularity.day,
-                    label: Text('Day'),
-                    icon: Icon(Icons.calendar_today),
-                  ),
-                  ButtonSegment(
-                    value: DateGranularity.hour,
-                    label: Text('Hour'),
-                    icon: Icon(Icons.access_time),
-                  ),
-                ],
-                selected: {_granularity},
-                onSelectionChanged: (set) {
-                  setState(() {
-                    _granularity = set.first;
-                  });
-                },
+                  segments: const [
+                    ButtonSegment(
+                      value: DateGranularity.month,
+                      label: Text('Month'),
+                      icon: Icon(Icons.calendar_view_month),
+                    ),
+                    ButtonSegment(
+                      value: DateGranularity.day,
+                      label: Text('Day'),
+                      icon: Icon(Icons.calendar_today),
+                    ),
+                    ButtonSegment(
+                      value: DateGranularity.hour,
+                      label: Text('Hour'),
+                      icon: Icon(Icons.access_time),
+                    ),
+                  ],
+                  selected: {_granularity},
+                  onSelectionChanged: (set) {
+                    setState(() {
+                      _granularity = set.first;
+                    });
+                  },
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -134,6 +153,7 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
                   Expanded(
                     flex: 3,
                     child: DropdownButtonFormField<int>(
+                      isExpanded: true,
                       initialValue: _year,
                       decoration: const InputDecoration(
                         labelText: 'Year',
@@ -152,6 +172,7 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
                   Expanded(
                     flex: 4,
                     child: DropdownButtonFormField<int>(
+                      isExpanded: true,
                       initialValue: _month,
                       decoration: const InputDecoration(
                         labelText: 'Month',
@@ -179,6 +200,7 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<int>(
+                        isExpanded: true,
                         initialValue: _day > maxDays ? maxDays : _day,
                         decoration: const InputDecoration(
                           labelText: 'Day',
@@ -197,6 +219,7 @@ class _ScheduleDatePickerDialogState extends State<ScheduleDatePickerDialog> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<int>(
+                          isExpanded: true,
                           initialValue: _hour,
                           decoration: const InputDecoration(
                             labelText: 'Hour (24h)',
