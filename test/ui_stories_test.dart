@@ -98,6 +98,72 @@ void main() {
     }
   });
 
+  testWidgets('Subtasks are nested in parent task node in Graph View with smaller cards showing only name and person assignment',
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1400, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final controller = ScheduleController(storageService: TestStorageService());
+    await controller.init();
+
+    // 1. Verify layout engine nodes:
+    // Only top-level tasks exist as GraphNodes. Subtasks (task 2, task 3) must NOT be separate nodes.
+    final layoutResult = GraphLayoutEngine.layout(controller.schedule);
+    expect(layoutResult.nodes.containsKey('task_1'), isTrue); // Top-level
+    expect(layoutResult.nodes.containsKey('task_4'), isTrue); // Top-level
+    expect(layoutResult.nodes.containsKey('task_5'), isTrue); // Top-level
+    expect(layoutResult.nodes.containsKey('task_8'), isTrue); // Top-level
+
+    // Verify subtasks are NOT separate nodes
+    expect(layoutResult.nodes.containsKey('task_2'), isFalse); // Subtask of 1
+    expect(layoutResult.nodes.containsKey('task_3'), isFalse); // Subtask of 1
+    expect(layoutResult.nodes.containsKey('task_6'), isFalse); // Subtask of 5
+    expect(layoutResult.nodes.containsKey('task_7'), isFalse); // Subtask of 5
+
+    // Verify no separate subtask edges connect nodes on canvas
+    final subtaskEdges = layoutResult.edges.where((e) => e.type == EdgeType.subtask).toList();
+    expect(subtaskEdges, isEmpty);
+
+    // Verify parent node height is dynamically sized larger to accommodate nested subtask cards
+    final task1Node = layoutResult.nodes['task_1']!;
+    final task4Node = layoutResult.nodes['task_4']!;
+    expect(task1Node.size.height, greaterThan(task4Node.size.height));
+
+    // 2. Render FullGraphView and verify UI
+    await tester.pumpWidget(ProjectSchedulerApp(controller: controller));
+    await tester.pumpAndSettle();
+
+    // Switch to Interactive Graph View
+    await tester.tap(find.text('Interactive Graph View'));
+    await tester.pumpAndSettle();
+
+    // Verify Parent task card #1 is rendered
+    expect(find.text('#1 System Architecture & Schema Design'), findsOneWidget);
+
+    // Verify Nested subtasks headers (both Task 1 and Task 5 have 2 subtasks)
+    expect(find.text('Subtasks (2)'), findsNWidgets(2));
+
+    // Verify nested smaller subtask cards show names
+    expect(find.text('#2 Draft JSON Schema'), findsOneWidget);
+    expect(find.text('#3 Validate Storage Pipeline'), findsOneWidget);
+    expect(find.text('#6 Layout & Coordinate Engine'), findsOneWidget);
+    expect(find.text('#7 Multi-criteria Highlight Layers'), findsOneWidget);
+
+    // Verify nested smaller subtask cards show person assignment
+    expect(find.text('Alice Chen'), findsWidgets); // Assignee for #2
+    expect(find.text('Alice Chen, Bob Taylor'), findsOneWidget); // Assignees for #3
+
+    // Verify subtask card does NOT show priority or dates for subtasks
+    // (Subtask #2 has workload 4h and no priority, verify no 'P' badge on subtask)
+    // Tapping subtask card #2 selects task #2 and opens TaskFocusedGraphView
+    await tester.tap(find.text('#2 Draft JSON Schema'));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pumpAndSettle();
+
+    expect(controller.selectedTask?.taskId, equals(2));
+    expect(find.text('Task Inspector: #2 Draft JSON Schema'), findsOneWidget);
+  });
+
   testWidgets('User Story 17: Highlight filters drawer opens and toggles Match All / Separate modes',
       (WidgetTester tester) async {
     await tester.binding.setSurfaceSize(const Size(1280, 800));

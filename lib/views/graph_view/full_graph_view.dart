@@ -114,6 +114,7 @@ class _FullGraphViewState extends State<FullGraphView> {
                           schedule: schedule,
                           highlightCriteria: widget.controller.highlightCriteria,
                           isSelected: selectedTask?.taskId == task.taskId,
+                          selectedTaskId: selectedTask?.taskId,
                           onTap: () {
                             // User story 18: Select task to see focused graph view
                             widget.controller.selectTask(task);
@@ -123,6 +124,16 @@ class _FullGraphViewState extends State<FullGraphView> {
                               context: context,
                               controller: widget.controller,
                               taskToEdit: task,
+                            );
+                          },
+                          onTapSubtask: (subtask) {
+                            widget.controller.selectTask(subtask);
+                          },
+                          onDoubleTapSubtask: (subtask) {
+                            TaskEditDialog.show(
+                              context: context,
+                              controller: widget.controller,
+                              taskToEdit: subtask,
                             );
                           },
                         ),

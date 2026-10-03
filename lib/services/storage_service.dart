@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/schedule_data.dart';
 import '../models/person.dart';
@@ -31,7 +32,18 @@ class StorageService {
         }
       }
     } catch (e) {
-      // Fallback if loading failed
+      // Fallback to rootbundle if loading failed
+    }
+    try {
+      final content = await rootBundle.loadString("assets/schedule.json");
+      if (content.trim().isNotEmpty) {
+        final decoded = jsonDecode(content);
+        if (decoded is Map<String, dynamic>) {
+          return ScheduleData.fromJson(decoded);
+        }
+      }
+    } catch (e) {
+      // Fallback to starter if loading failed
     }
     return getStarterSchedule();
   }
