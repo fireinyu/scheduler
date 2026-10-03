@@ -132,28 +132,38 @@ class _ImportExportDialogState extends State<ImportExportDialog> with SingleTick
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currentExportJson = widget.controller.exportJson();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 520;
 
     return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 640, maxHeight: 680),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(isMobile ? 14 : 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.swap_horiz, color: theme.colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Import / Export Schedule',
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.swap_horiz, color: theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            'Import / Export Schedule',
+                            style: (isMobile ? theme.textTheme.titleMedium : theme.textTheme.titleLarge)?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -178,35 +188,79 @@ class _ImportExportDialogState extends State<ImportExportDialog> with SingleTick
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.check_circle_outline, color: Colors.green, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Conforms strictly to schedule.json schema',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: Colors.green.shade800,
-                                fontWeight: FontWeight.bold,
+                        if (isMobile) ...[
+                          Row(
+                            children: [
+                              const Icon(Icons.check_circle_outline, color: Colors.green, size: 16),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Conforms to schedule.json schema',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.green.shade800,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.copy, size: 20),
-                              tooltip: 'Copy JSON to clipboard',
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: currentExportJson));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Copied JSON to clipboard!')),
-                                );
-                              },
-                            ),
-                            FilledButton.icon(
-                              onPressed: _exportToFile,
-                              icon: const Icon(Icons.download, size: 18),
-                              label: const Text('Export to File'),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            alignment: WrapAlignment.end,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.copy, size: 20),
+                                tooltip: 'Copy JSON to clipboard',
+                                onPressed: () {
+                                  Clipboard.setData(ClipboardData(text: currentExportJson));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Copied JSON to clipboard!')),
+                                  );
+                                },
+                              ),
+                              FilledButton.icon(
+                                onPressed: _exportToFile,
+                                icon: const Icon(Icons.download, size: 18),
+                                label: const Text('Export to File'),
+                              ),
+                            ],
+                          ),
+                        ] else
+                          Row(
+                            children: [
+                              const Icon(Icons.check_circle_outline, color: Colors.green, size: 18),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  'Conforms strictly to schedule.json schema',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.green.shade800,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.copy, size: 20),
+                                tooltip: 'Copy JSON to clipboard',
+                                onPressed: () {
+                                  Clipboard.setData(ClipboardData(text: currentExportJson));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Copied JSON to clipboard!')),
+                                  );
+                                },
+                              ),
+                              FilledButton.icon(
+                                onPressed: _exportToFile,
+                                icon: const Icon(Icons.download, size: 18),
+                                label: const Text('Export to File'),
+                              ),
+                            ],
+                          ),
                         const SizedBox(height: 10),
                         Expanded(
                           child: Container(
@@ -234,20 +288,37 @@ class _ImportExportDialogState extends State<ImportExportDialog> with SingleTick
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Paste schedule JSON or pick file from disk:',
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                            const Spacer(),
-                            OutlinedButton.icon(
-                              onPressed: _importFromFile,
-                              icon: const Icon(Icons.folder_open, size: 18),
-                              label: const Text('Choose File'),
-                            ),
-                          ],
-                        ),
+                        if (isMobile)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Paste JSON or pick file:',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: _importFromFile,
+                                icon: const Icon(Icons.folder_open, size: 18),
+                                label: const Text('Choose File'),
+                              ),
+                            ],
+                          )
+                        else
+                          Row(
+                            children: [
+                              Text(
+                                'Paste schedule JSON or pick file from disk:',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              const Spacer(),
+                              OutlinedButton.icon(
+                                onPressed: _importFromFile,
+                                icon: const Icon(Icons.folder_open, size: 18),
+                                label: const Text('Choose File'),
+                              ),
+                            ],
+                          ),
                         const SizedBox(height: 10),
                         Expanded(
                           child: TextField(
@@ -292,8 +363,8 @@ class _ImportExportDialogState extends State<ImportExportDialog> with SingleTick
                           ),
                         ],
                         const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                        Wrap(
+                          alignment: WrapAlignment.end,
                           children: [
                             FilledButton.icon(
                               onPressed: () => _doImport(_importJsonController.text),

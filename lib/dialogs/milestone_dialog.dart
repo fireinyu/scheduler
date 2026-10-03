@@ -134,66 +134,126 @@ class _MilestoneDialogState extends State<MilestoneDialog> {
     final theme = Theme.of(context);
     final milestones = widget.controller.schedule.milestones;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 480;
+
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      contentPadding: EdgeInsets.fromLTRB(isMobile ? 16 : 24, 16, isMobile ? 16 : 24, 16),
       title: const Row(
         children: [
           Icon(Icons.flag_rounded),
           SizedBox(width: 8),
-          Text('Manage Milestones'),
+          Flexible(
+            child: Text(
+              'Manage Milestones',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
-      content: SizedBox(
-        width: 480,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'New Milestone Name',
-                      hintText: 'e.g. Beta Release',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            if (isMobile) ...[
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'New Milestone Name',
+                  hintText: 'e.g. Beta Release',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+                onSubmitted: (_) => _addMilestone(),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final picked = await ScheduleDatePickerDialog.show(
+                          context,
+                          initialDate: _newDeadline,
+                        );
+                        if (picked != null) {
+                          setState(() => _newDeadline = picked);
+                        }
+                      },
+                      icon: Icon(
+                        Icons.calendar_month,
+                        size: 18,
+                        color: _newDeadline != null ? theme.colorScheme.primary : null,
+                      ),
+                      label: Text(
+                        _newDeadline != null ? _newDeadline!.formatted : 'Deadline',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: _newDeadline != null ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
                     ),
-                    onSubmitted: (_) => _addMilestone(),
                   ),
-                ),
-                const SizedBox(width: 8),
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    final picked = await ScheduleDatePickerDialog.show(
-                      context,
-                      initialDate: _newDeadline,
-                    );
-                    if (picked != null) {
-                      setState(() => _newDeadline = picked);
-                    }
-                  },
-                  icon: Icon(
-                    Icons.calendar_month,
-                    size: 18,
-                    color: _newDeadline != null ? theme.colorScheme.primary : null,
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: _addMilestone,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add'),
                   ),
-                  label: Text(
-                    _newDeadline != null ? _newDeadline!.formatted : 'Deadline',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: _newDeadline != null ? FontWeight.bold : FontWeight.normal,
+                ],
+              ),
+            ] else
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'New Milestone Name',
+                        hintText: 'e.g. Beta Release',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      ),
+                      onSubmitted: (_) => _addMilestone(),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  onPressed: _addMilestone,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add'),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 8),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final picked = await ScheduleDatePickerDialog.show(
+                        context,
+                        initialDate: _newDeadline,
+                      );
+                      if (picked != null) {
+                        setState(() => _newDeadline = picked);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.calendar_month,
+                      size: 18,
+                      color: _newDeadline != null ? theme.colorScheme.primary : null,
+                    ),
+                    label: Text(
+                      _newDeadline != null ? _newDeadline!.formatted : 'Deadline',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: _newDeadline != null ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: _addMilestone,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add'),
+                  ),
+                ],
+              ),
             const SizedBox(height: 16),
             Text(
               'Milestones (${milestones.length})',
@@ -222,38 +282,48 @@ class _MilestoneDialogState extends State<MilestoneDialog> {
                         final ms = milestones[i];
                         return ListTile(
                           dense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                           leading: CircleAvatar(
-                            radius: 16,
+                            radius: 14,
                             backgroundColor: theme.colorScheme.secondaryContainer,
                             child: Icon(
                               Icons.flag,
-                              size: 16,
+                              size: 14,
                               color: theme.colorScheme.onSecondaryContainer,
                             ),
                           ),
                           title: Text(
                             ms.name,
                             style: const TextStyle(fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text(
                             ms.deadline != null
-                                ? 'Due: ${ms.deadline!.formatted} (ID: ${ms.milestoneId})'
-                                : 'No deadline (ID: ${ms.milestoneId})',
+                                ? 'Due: ${ms.deadline!.formatted}'
+                                : 'No deadline',
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: ms.deadline != null
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.outline,
+                              fontSize: 11,
                             ),
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                                 icon: const Icon(Icons.edit, size: 18),
                                 tooltip: 'Edit Milestone',
                                 onPressed: () => _editMilestone(ms),
                               ),
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                                 icon: Icon(Icons.delete_outline,
                                     size: 18, color: theme.colorScheme.error),
                                 tooltip: 'Delete Milestone',
@@ -269,6 +339,7 @@ class _MilestoneDialogState extends State<MilestoneDialog> {
                     ),
             ),
           ],
+        ),
         ),
       ),
       actions: [

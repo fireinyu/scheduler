@@ -75,20 +75,32 @@ class _TeammateDialogState extends State<TeammateDialog> {
     final theme = Theme.of(context);
     final teammates = widget.controller.schedule.teammates;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 500;
+
     return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      contentPadding: EdgeInsets.fromLTRB(isMobile ? 16 : 24, 16, isMobile ? 16 : 24, 16),
       title: const Row(
         children: [
           Icon(Icons.people_alt_outlined),
           SizedBox(width: 8),
-          Text('Manage Teammates'),
+          Flexible(
+            child: Text(
+              'Manage Teammates',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
-      content: SizedBox(
-        width: 440,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: SizedBox(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Row(
               children: [
                 Expanded(
@@ -139,32 +151,40 @@ class _TeammateDialogState extends State<TeammateDialog> {
                         final person = teammates[i];
                         return ListTile(
                           dense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                           leading: CircleAvatar(
-                            radius: 16,
+                            radius: 14,
                             backgroundColor: theme.colorScheme.primaryContainer,
                             child: Text(
                               person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
                               style: TextStyle(
                                 color: theme.colorScheme.onPrimaryContainer,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                                fontSize: 12,
                               ),
                             ),
                           ),
                           title: Text(
                             person.name,
                             style: const TextStyle(fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          subtitle: Text('ID: ${person.personId}'),
+                          subtitle: Text('ID: ${person.personId}', overflow: TextOverflow.ellipsis),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                                 icon: const Icon(Icons.edit, size: 18),
                                 tooltip: 'Edit Name',
                                 onPressed: () => _editTeammate(person),
                               ),
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
                                 icon: Icon(Icons.delete_outline,
                                     size: 18, color: theme.colorScheme.error),
                                 tooltip: 'Delete Teammate',
@@ -180,6 +200,7 @@ class _TeammateDialogState extends State<TeammateDialog> {
                     ),
             ),
           ],
+        ),
         ),
       ),
       actions: [

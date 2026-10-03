@@ -44,6 +44,8 @@ class TaskFocusedGraphView extends StatelessWidget {
 
     // 5. Effective deadline
     final deadline = schedule.getEffectiveDeadline(currentTask);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompact = screenWidth < 800;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surfaceContainerLowest,
@@ -88,19 +90,26 @@ class TaskFocusedGraphView extends StatelessWidget {
               );
             },
           ),
-          FilledButton.icon(
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+          if (isCompact)
+            TextButton.icon(
+              icon: const Icon(Icons.fullscreen_exit, size: 18),
+              label: const Text('Full Graph'),
+              onPressed: onBackToFullGraph,
+            )
+          else
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+              icon: const Icon(Icons.fullscreen_exit, size: 18),
+              label: const Text('Full Graph'),
+              onPressed: onBackToFullGraph,
             ),
-            icon: const Icon(Icons.fullscreen_exit, size: 18),
-            label: const Text('Full Graph'),
-            onPressed: onBackToFullGraph,
-          ),
           const SizedBox(width: 12),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(isCompact ? 12 : 24),
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1100),
@@ -133,93 +142,172 @@ class TaskFocusedGraphView extends StatelessWidget {
                   const SizedBox(height: 12),
                 ],
 
-                // Middle: 3 Columns [Prerequisites (Left) | CENTER FOCUS TASK | Dependents (Right)]
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Column: Requisite Dependencies
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSectionHeader(
-                            context,
-                            title: 'Requisite Tasks (Depends On)',
-                            icon: Icons.east,
-                            color: theme.colorScheme.primary,
-                            count: prerequisites.length,
-                          ),
-                          const SizedBox(height: 8),
-                          if (prerequisites.isEmpty)
-                            _buildEmptyPlaceholder(
-                              context,
-                              'No requisite dependencies.',
-                            )
-                          else
-                            ...prerequisites.map((req) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: _buildRelatedTaskCard(
-                                    context,
-                                    req,
-                                    relationBadge: 'Pre-requisite (Needs First)',
-                                    badgeColor: theme.colorScheme.primary,
-                                    isDependency: true,
-                                  ),
-                                )),
-                        ],
+                // Middle: Adaptive layout (3 Columns on Desktop/Tablet, Vertical Flow on Mobile)
+                if (isCompact) ...[
+                  // Requisite Dependencies
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionHeader(
+                        context,
+                        title: 'Requisite Tasks (Depends On)',
+                        icon: Icons.arrow_downward,
+                        color: theme.colorScheme.primary,
+                        count: prerequisites.length,
                       ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 80),
-                      child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
-                    ),
+                      const SizedBox(height: 8),
+                      if (prerequisites.isEmpty)
+                        _buildEmptyPlaceholder(
+                          context,
+                          'No requisite dependencies.',
+                        )
+                      else
+                        ...prerequisites.map((req) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildRelatedTaskCard(
+                                context,
+                                req,
+                                relationBadge: 'Pre-requisite (Needs First)',
+                                badgeColor: theme.colorScheme.primary,
+                                isDependency: true,
+                              ),
+                            )),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: Icon(Icons.arrow_downward, color: Colors.grey, size: 22),
+                  ),
+                  const SizedBox(height: 12),
 
-                    // Center: The Focused Task
-                    Expanded(
-                      flex: 4,
-                      child: _buildFocusedTaskCard(context, currentTask, deadline),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 80),
-                      child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
-                    ),
+                  // Center: The Focused Task
+                  _buildFocusedTaskCard(context, currentTask, deadline),
 
-                    // Right Column: Dependent Tasks
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildSectionHeader(
-                            context,
-                            title: 'Dependent Tasks (Waiting on this)',
-                            icon: Icons.east,
-                            color: Colors.deepOrange,
-                            count: dependents.length,
-                          ),
-                          const SizedBox(height: 8),
-                          if (dependents.isEmpty)
-                            _buildEmptyPlaceholder(
-                              context,
-                              'No tasks currently depend on this task.',
-                            )
-                          else
-                            ...dependents.map((dep) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: _buildRelatedTaskCard(
-                                    context,
-                                    dep,
-                                    relationBadge: 'Dependent (Blocked until complete)',
-                                    badgeColor: Colors.deepOrange,
-                                    isDependency: false,
-                                  ),
-                                )),
-                        ],
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: Icon(Icons.arrow_downward, color: Colors.grey, size: 22),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Dependent Tasks
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSectionHeader(
+                        context,
+                        title: 'Dependent Tasks (Waiting on this)',
+                        icon: Icons.arrow_downward,
+                        color: Colors.deepOrange,
+                        count: dependents.length,
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 8),
+                      if (dependents.isEmpty)
+                        _buildEmptyPlaceholder(
+                          context,
+                          'No tasks currently depend on this task.',
+                        )
+                      else
+                        ...dependents.map((dep) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildRelatedTaskCard(
+                                context,
+                                dep,
+                                relationBadge: 'Dependent (Blocked until complete)',
+                                badgeColor: Colors.deepOrange,
+                                isDependency: false,
+                              ),
+                            )),
+                    ],
+                  ),
+                ] else ...[
+                  // Desktop 3 Columns [Prerequisites (Left) | CENTER FOCUS TASK | Dependents (Right)]
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left Column: Requisite Dependencies
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildSectionHeader(
+                              context,
+                              title: 'Requisite Tasks (Depends On)',
+                              icon: Icons.east,
+                              color: theme.colorScheme.primary,
+                              count: prerequisites.length,
+                            ),
+                            const SizedBox(height: 8),
+                            if (prerequisites.isEmpty)
+                              _buildEmptyPlaceholder(
+                                context,
+                                'No requisite dependencies.',
+                              )
+                            else
+                              ...prerequisites.map((req) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: _buildRelatedTaskCard(
+                                      context,
+                                      req,
+                                      relationBadge: 'Pre-requisite (Needs First)',
+                                      badgeColor: theme.colorScheme.primary,
+                                      isDependency: true,
+                                    ),
+                                  )),
+                          ],
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 80),
+                        child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
+                      ),
+
+                      // Center: The Focused Task
+                      Expanded(
+                        flex: 4,
+                        child: _buildFocusedTaskCard(context, currentTask, deadline),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 80),
+                        child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
+                      ),
+
+                      // Right Column: Dependent Tasks
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildSectionHeader(
+                              context,
+                              title: 'Dependent Tasks (Waiting on this)',
+                              icon: Icons.east,
+                              color: Colors.deepOrange,
+                              count: dependents.length,
+                            ),
+                            const SizedBox(height: 8),
+                            if (dependents.isEmpty)
+                              _buildEmptyPlaceholder(
+                                context,
+                                'No tasks currently depend on this task.',
+                              )
+                            else
+                              ...dependents.map((dep) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: _buildRelatedTaskCard(
+                                      context,
+                                      dep,
+                                      relationBadge: 'Dependent (Blocked until complete)',
+                                      badgeColor: Colors.deepOrange,
+                                      isDependency: false,
+                                    ),
+                                  )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 24),
 
                 // Bottom: Subtasks (if any)
@@ -240,7 +328,7 @@ class TaskFocusedGraphView extends StatelessWidget {
                     runSpacing: 12,
                     children: subtasks.map((sub) {
                       return SizedBox(
-                        width: 330,
+                        width: isCompact ? double.infinity : 330,
                         child: _buildRelatedTaskCard(
                           context,
                           sub,
@@ -349,8 +437,11 @@ class TaskFocusedGraphView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Focused badge
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              alignment: WrapAlignment.spaceBetween,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

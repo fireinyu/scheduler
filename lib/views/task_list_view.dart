@@ -43,6 +43,9 @@ class _TaskListViewState extends State<TaskListView> {
       return true;
     }).toList();
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Column(
       children: [
         // Filter toolbar
@@ -52,63 +55,116 @@ class _TaskListViewState extends State<TaskListView> {
             color: theme.colorScheme.surface,
             border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
           ),
-          child: Row(
-            children: [
-              // Search input
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search tasks or notes...',
-                    prefixIcon: const Icon(Icons.search, size: 20),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () => setState(() => _searchQuery = ''),
-                          )
-                        : null,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Milestone filter (User story 20: Search by name in menu)
-              Expanded(
-                flex: 2,
-                child: SearchableDropdown<int?>(
-                  labelText: 'Milestone',
-                  isDense: true,
-                  value: _filterMilestone,
-                  items: [
-                    const SearchableItem<int?>(
-                      value: null,
-                      label: 'All Milestones',
-                      isNoneOption: true,
+          child: isMobile
+              ? Column(
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search tasks or notes...',
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 18),
+                                onPressed: () => setState(() => _searchQuery = ''),
+                              )
+                            : null,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
                     ),
-                    ...milestones.map((m) => SearchableItem<int?>(
-                          value: m.milestoneId,
-                          label: m.name,
-                          subtitle: 'ID: ${m.milestoneId}${m.deadline != null ? ' • Due: ${m.deadline!.formatted}' : ''}',
-                          leading: const Icon(Icons.flag, size: 16, color: Colors.blue),
-                        )),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SearchableDropdown<int?>(
+                            labelText: 'Milestone',
+                            isDense: true,
+                            value: _filterMilestone,
+                            items: [
+                              const SearchableItem<int?>(
+                                value: null,
+                                label: 'All Milestones',
+                                isNoneOption: true,
+                              ),
+                              ...milestones.map((m) => SearchableItem<int?>(
+                                    value: m.milestoneId,
+                                    label: m.name,
+                                    subtitle: 'ID: ${m.milestoneId}${m.deadline != null ? ' • Due: ${m.deadline!.formatted}' : ''}',
+                                    leading: const Icon(Icons.flag, size: 16, color: Colors.blue),
+                                  )),
+                            ],
+                            onChanged: (val) => setState(() => _filterMilestone = val),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        FilterChip(
+                          label: const Text('Incomplete Only'),
+                          selected: _onlyIncomplete,
+                          onSelected: (val) => setState(() => _onlyIncomplete = val),
+                        ),
+                      ],
+                    ),
                   ],
-                  onChanged: (val) => setState(() => _filterMilestone = val),
-                ),
-              ),
-              const SizedBox(width: 12),
+                )
+              : Row(
+                  children: [
+                    // Search input
+                    Expanded(
+                      flex: 3,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search tasks or notes...',
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, size: 18),
+                                  onPressed: () => setState(() => _searchQuery = ''),
+                                )
+                              : null,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
 
-              // Incomplete toggle
-              FilterChip(
-                label: const Text('Incomplete Only'),
-                selected: _onlyIncomplete,
-                onSelected: (val) => setState(() => _onlyIncomplete = val),
-              ),
-            ],
-          ),
+                    // Milestone filter (User story 20: Search by name in menu)
+                    Expanded(
+                      flex: 2,
+                      child: SearchableDropdown<int?>(
+                        labelText: 'Milestone',
+                        isDense: true,
+                        value: _filterMilestone,
+                        items: [
+                          const SearchableItem<int?>(
+                            value: null,
+                            label: 'All Milestones',
+                            isNoneOption: true,
+                          ),
+                          ...milestones.map((m) => SearchableItem<int?>(
+                                value: m.milestoneId,
+                                label: m.name,
+                                subtitle: 'ID: ${m.milestoneId}${m.deadline != null ? ' • Due: ${m.deadline!.formatted}' : ''}',
+                                leading: const Icon(Icons.flag, size: 16, color: Colors.blue),
+                              )),
+                        ],
+                        onChanged: (val) => setState(() => _filterMilestone = val),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Incomplete toggle
+                    FilterChip(
+                      label: const Text('Incomplete Only'),
+                      selected: _onlyIncomplete,
+                      onSelected: (val) => setState(() => _onlyIncomplete = val),
+                    ),
+                  ],
+                ),
         ),
 
         // Task Tree List
