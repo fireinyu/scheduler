@@ -1,0 +1,187 @@
+{
+  "teammates": [
+    {
+      "personId": 1,
+      "name": "Zheng Yong"
+    },
+    {
+      "personId": 2,
+      "name": "Krithic"
+    },
+    {
+      "personId": 3,
+      "name": "Linus"
+    },
+    {
+      "personId": 4,
+      "name": "Nithesh"
+    },
+    {
+      "personId": 5,
+      "name": "Pu Yu"
+    }
+  ],
+  "milestones": [
+    {
+      "milestoneId": 1,
+      "name": "v1.2",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 8,
+        "hour": 23
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "taskId": 1,
+      "name": "Implement StoryList",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 1,
+      "priority": 2
+    },
+    {
+      "taskId": 2,
+      "name": "Story interface",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 1,
+      "priority": 2,
+      "note": "Interface only, no implementation"
+    },
+    {
+      "taskId": 3,
+      "name": "Basic UI for MVP",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 4,
+          "name": "Refactor existing UI code",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 1,
+          "priority": 1,
+          "note": "If necessary\n- renaming\n- extracting classes"
+        },
+        {
+          "taskId": 5,
+          "name": "Add Story panel skeleton",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 1,
+          "priority": 1
+        },
+        {
+          "taskId": 6,
+          "name": "Basic story card",
+          "dependencies": [
+            2
+          ],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 1,
+          "priority": 1
+        },
+        {
+          "taskId": 7,
+          "name": "Integrate with StoryList",
+          "dependencies": [
+            1,
+            2,
+            5,
+            6
+          ],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 1,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 1,
+      "priority": 1
+    },
+    {
+      "taskId": 8,
+      "name": "Command: Add Story",
+      "dependencies": [
+        1,
+        2
+      ],
+      "subtasks": [],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 1
+    },
+    {
+      "taskId": 9,
+      "name": "Story Implementation",
+      "dependencies": [
+        2
+      ],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 1
+    },
+    {
+      "taskId": 10,
+      "name": "Command: List stories",
+      "dependencies": [
+        2,
+        1
+      ],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 1,
+      "note": "Should be similar to exisiting list command, shown below:\n```java\n    @Override\r\n    public CommandResult execute(Model model) {\r\n        requireNonNull(model);\r\n        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);\r\n        return new CommandResult(MESSAGE_SUCCESS);\r\n    }\n```"
+    },
+    {
+      "taskId": 11,
+      "name": "Storage",
+      "dependencies": [
+        2
+      ],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 1
+    }
+  ]
+}
