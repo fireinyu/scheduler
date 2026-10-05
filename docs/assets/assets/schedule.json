@@ -31,6 +31,10 @@
         "day": 8,
         "hour": 23
       }
+    },
+    {
+      "milestoneId": 2,
+      "name": "v1.3"
     }
   ],
   "tasks": [
@@ -163,7 +167,7 @@
         1
       ],
       "completed": false,
-      "milestone": 1,
+      "milestone": 2,
       "note": "Implement missing association between story and contact"
     },
     {
