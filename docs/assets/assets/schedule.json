@@ -46,7 +46,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -86,7 +86,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1,
           "note": "If necessary\n- renaming\n- extracting classes"
@@ -99,7 +99,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         },
@@ -113,7 +113,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         },
@@ -130,7 +130,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         }
@@ -138,7 +138,7 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1,
       "priority": 1
     },
@@ -166,7 +166,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "note": "Implement missing association between story and contact"
     },
@@ -181,7 +181,7 @@
       "assignees": [
         3
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1,
       "note": "Should be similar to exisiting list command, shown below:\n```java\n    @Override\r\n    public CommandResult execute(Model model) {\r\n        requireNonNull(model);\r\n        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);\r\n        return new CommandResult(MESSAGE_SUCCESS);\r\n    }\n```"
     },
