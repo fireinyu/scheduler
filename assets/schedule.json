@@ -31,6 +31,15 @@
         "day": 8,
         "hour": 23
       }
+    },
+    {
+      "milestoneId": 2,
+      "name": "v1.3",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 15
+      }
     }
   ],
   "tasks": [
@@ -42,24 +51,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
-      "deadline": {
-        "year": 2026,
-        "month": 10,
-        "day": 5
-      },
-      "milestone": 1,
-      "priority": 2
-    },
-    {
-      "taskId": 2,
-      "name": "Story interface",
-      "dependencies": [],
-      "subtasks": [],
-      "assignees": [
-        1
-      ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -67,7 +59,24 @@
       },
       "milestone": 1,
       "priority": 2,
-      "note": "Interface only, no implementation"
+      "note": "# Pending merge"
+    },
+    {
+      "taskId": 2,
+      "name": "Story basic implementation",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": true,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 5
+      },
+      "milestone": 1,
+      "priority": 2
     },
     {
       "taskId": 3,
@@ -82,7 +91,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1,
           "note": "If necessary\n- renaming\n- extracting classes"
@@ -95,7 +104,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         },
@@ -109,7 +118,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         },
@@ -126,7 +135,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 1,
           "priority": 1
         }
@@ -134,7 +143,7 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1,
       "priority": 1
     },
@@ -149,12 +158,12 @@
       "assignees": [
         2
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1
     },
     {
       "taskId": 9,
-      "name": "Story Implementation",
+      "name": "Finish Story Implementation",
       "dependencies": [
         2
       ],
@@ -162,8 +171,9 @@
       "assignees": [
         1
       ],
-      "completed": false,
-      "milestone": 1
+      "completed": true,
+      "milestone": 2,
+      "note": "Implement missing association between story and contact"
     },
     {
       "taskId": 10,
@@ -176,7 +186,7 @@
       "assignees": [
         3
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1,
       "note": "Should be similar to exisiting list command, shown below:\n```java\n    @Override\r\n    public CommandResult execute(Model model) {\r\n        requireNonNull(model);\r\n        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);\r\n        return new CommandResult(MESSAGE_SUCCESS);\r\n    }\n```"
     },
@@ -190,8 +200,120 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1
+    },
+    {
+      "taskId": 12,
+      "name": "Link stories and contacts in Model",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 11
+      },
+      "milestone": 2,
+      "priority": 2
+    },
+    {
+      "taskId": 13,
+      "name": "Update parser (interface)",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 11
+      },
+      "milestone": 2,
+      "priority": 2,
+      "note": "- interface class/ method to be used by command parsers\n- may need to modify code for existing commands"
+    },
+    {
+      "taskId": 14,
+      "name": "Update parser (implementation)",
+      "dependencies": [
+        13
+      ],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- support multiple index fields\n- support \"...\" w/ spaces"
+    },
+    {
+      "taskId": 15,
+      "name": "Update storage to keep track of story-contact assignments",
+      "dependencies": [
+        12
+      ],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1
+    },
+    {
+      "taskId": 16,
+      "name": "Commands: Assign & unassign stories to contacts",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- assign command\n- unassign command"
+    },
+    {
+      "taskId": 17,
+      "name": "Commands: Update list and liststories to filter by assigned contact/ story",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- check `find` implementation"
+    },
+    {
+      "taskId": 18,
+      "name": "Command: Delete stories",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- remove link from both story and contact"
     }
   ]
 }
