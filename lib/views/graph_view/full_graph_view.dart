@@ -184,7 +184,7 @@ class _FullGraphViewState extends State<FullGraphView> {
                       message: 'Search tasks by name in menu (User story 20)',
                       child: TextButton.icon(
                         icon: const Icon(Icons.search),
-                        label: const Text('Find'),
+                        label: const Text('Find Task'),
                         onPressed: () async {
                         final allTasks = schedule.getAllTasks();
                         final pickedTask = await SearchableMenuDialog.show<Task>(
@@ -221,11 +221,7 @@ class _FullGraphViewState extends State<FullGraphView> {
                             ? theme.colorScheme.primary
                             : null,
                       ),
-                      label: Text(
-                        widget.controller.highlightCriteria.hasAnyActiveCriteria
-                            ? 'Highlights'
-                            : 'Highlights',
-                      ),
+                      label: const Text('Highlight Filters'),
                       onPressed: () {
                         setState(() {
                           _showHighlightPanel = !_showHighlightPanel;

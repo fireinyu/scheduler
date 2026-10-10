@@ -17,7 +17,7 @@ class DeadlineNodeWidget extends StatelessWidget {
     final isPast = deadline != null && DateTime.now().isAfter(deadline!.endInstant);
 
     return Container(
-      width: 200,
+      width: 210,
       height: 55,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(

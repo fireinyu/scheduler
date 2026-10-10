@@ -29,7 +29,8 @@
     - My teammates can access the schedule by importing the schedule to the app on their devices
 16. As a user I can see a graph view of the entire schedule so that I can visualise the current state of the project at a glance
     - All edges in the graph view are arrow that must point from left to right
-    - The deadlines are explicitly shown as items in the graph view
+    - ==The milestones are explicitly shown as items in the graph view==
+    - The other deadlines are explicitly shown as items in the graph view
 17. As a user I can highlight parts of the graph view by different criteria so that I can focus on specific parts of the schedule
     - I can highlight the tasks which are due at or before a specified datetime
     - I can highlight the tasks belonging to a particular milestone

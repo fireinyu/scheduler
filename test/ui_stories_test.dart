@@ -520,6 +520,29 @@ void main() {
       expect(parentANode.subtaskLayouts[12], isNotNull);
       expect(parentBNode.subtaskLayouts[21], isNotNull);
     });
+
+    test('GraphLayoutEngine uses expanded horizontal space to prevent overlapping of lines and cards', () {
+      final schedule = StorageService.getStarterSchedule();
+      final result = GraphLayoutEngine.layout(schedule);
+
+      // Verify generous column spacing is at least 200px
+      expect(GraphLayoutEngine.colSpacing, greaterThanOrEqualTo(200.0));
+
+      // Verify that for all forward edges, there is ample horizontal gap (>= 200px) between cards
+      for (final edge in result.edges) {
+        final fromNode = result.nodes[edge.fromId]!;
+        final toNode = result.nodes[edge.toId]!;
+        final horizontalGap = toNode.position.dx - (fromNode.position.dx + fromNode.size.width);
+        expect(
+          horizontalGap,
+          greaterThanOrEqualTo(200.0),
+          reason: 'Horizontal space between ${edge.fromId} and ${edge.toId} must be at least 200px',
+        );
+      }
+
+      // Verify canvas width expands with the generous spacing
+      expect(result.canvasSize.width, greaterThan(1500.0));
+    });
   });
 
   group('Default Values and Duplicating Tasks User Story', () {

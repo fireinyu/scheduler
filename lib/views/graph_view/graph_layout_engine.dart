@@ -22,10 +22,10 @@ class GraphLayoutEngine {
   static const double deadlineNodeWidth = 210.0;
   static const double deadlineNodeHeight = 55.0;
 
-  static const double colSpacing = 90.0;
-  static const double rowSpacing = 40.0;
-  static const double startPaddingX = 60.0;
-  static const double startPaddingY = 60.0;
+  static const double colSpacing = 220.0;
+  static const double rowSpacing = 48.0;
+  static const double startPaddingX = 80.0;
+  static const double startPaddingY = 75.0;
 
   /// Calculates the dynamic height of a task node based on whether it has nested subtasks.
   static double calculateTaskNodeHeight(Task task) {
@@ -337,13 +337,18 @@ class GraphLayoutEngine {
       });
     }
 
-    // 6. Assign (X, Y) Coordinates
+    // 6. Assign (X, Y) Coordinates with expanded horizontal spacing
     double currentX = startPaddingX;
     double maxCanvasY = 600.0;
 
     for (int c = 0; c <= maxCol; c++) {
       final colItems = columnNodes[c] ?? [];
       double currentY = startPaddingY;
+      double colWidth = nodeWidth;
+
+      if (colItems.isNotEmpty) {
+        colWidth = colItems.map((n) => n.size.width).reduce(max);
+      }
 
       for (final node in colItems) {
         node.position = Offset(currentX, currentY);
@@ -351,10 +356,10 @@ class GraphLayoutEngine {
       }
 
       if (currentY > maxCanvasY) maxCanvasY = currentY;
-      currentX += nodeWidth + colSpacing;
+      currentX += colWidth + colSpacing;
     }
 
-    final maxCanvasX = max(currentX + 150, 1100.0);
+    final maxCanvasX = max(currentX + 150, 1200.0);
 
     return GraphLayoutResult(
       nodes: nodes,
