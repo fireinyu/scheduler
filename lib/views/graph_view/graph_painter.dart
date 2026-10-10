@@ -77,7 +77,7 @@ class GraphPainter extends CustomPainter {
       );
 
       // Compute obstacle-avoiding path that routes cleanly
-      final path = _computeObstacleAvoidingPath(start, end, fromNode, toNode);
+      final path = _computeObstacleAvoidingPath(start, end, fromNode, toNode, edge);
 
       // Draw according to edge type (all edges are arrows pointing from left to right)
       switch (edge.type) {
@@ -138,7 +138,7 @@ class GraphPainter extends CustomPainter {
           .toList();
       final index = sameSubEdges.indexOf(edge);
       final count = sameSubEdges.length;
-      final subJitter = count > 1 ? (index - (count - 1) / 2.0) * 8.0 : 0.0;
+      final subJitter = count > 1 ? (index - (count - 1) / 2.0) * 10.0 : 0.0;
       final y = node.position.dy + sub.centerY + subJitter;
 
       if (isIntraNode) {
@@ -164,7 +164,7 @@ class GraphPainter extends CustomPainter {
 
     if (node.task != null && node.task!.subtasks.isNotEmpty) {
       // Parent with subtasks: parent info area is at top ~74px (center ~45px)
-      final jitter = count > 1 ? (parentIdx - (count - 1) / 2.0) * 8.0 : 0.0;
+      final jitter = count > 1 ? (parentIdx - (count - 1) / 2.0) * 12.0 : 0.0;
       final y = node.position.dy + 45.0 + jitter;
       return Offset(
         isSource ? node.position.dx + node.size.width : node.position.dx,
@@ -184,10 +184,11 @@ class GraphPainter extends CustomPainter {
     Offset end,
     GraphNode fromNode,
     GraphNode toNode,
+    GraphEdge edge,
   ) {
     if (fromNode.id == toNode.id) {
       // Intra-node subtask dependency curve
-      final loopLeft = min(start.dx, end.dx) - 24.0;
+      final loopLeft = min(start.dx, end.dx) - 30.0;
       return Path()
         ..moveTo(start.dx, start.dy)
         ..cubicTo(
@@ -197,33 +198,19 @@ class GraphPainter extends CustomPainter {
         );
     }
 
-    final minX = min(start.dx, end.dx) + 8.0;
-    final maxX = max(start.dx, end.dx) - 8.0;
+    // Identify intermediate nodes whose horizontal span lies strictly between start and end columns
+    final minX = min(start.dx, end.dx) + 15.0;
+    final maxX = max(start.dx, end.dx) - 15.0;
 
-    final obstacles = <GraphNode>[];
-    for (final node in nodes.values) {
-      if (node.id == fromNode.id || node.id == toNode.id) continue;
-
-      // Check if node is horizontally in between start and end
+    final intermediateNodes = nodes.values.where((node) {
+      if (node.id == fromNode.id || node.id == toNode.id) return false;
       final nodeLeft = node.position.dx;
       final nodeRight = node.position.dx + node.size.width;
+      return nodeRight > minX && nodeLeft < maxX;
+    }).toList();
 
-      if (nodeRight > minX && nodeLeft < maxX) {
-        final nodeCenterX = (nodeLeft + nodeRight) / 2;
-        final t = (nodeCenterX - start.dx) / (end.dx - start.dx);
-        final lineY = start.dy + t * (end.dy - start.dy);
-
-        final nodeTop = node.position.dy - 10.0;
-        final nodeBottom = node.position.dy + node.size.height + 10.0;
-
-        if (lineY >= nodeTop && lineY <= nodeBottom) {
-          obstacles.add(node);
-        }
-      }
-    }
-
-    // Direct path if no obstacles intersect
-    if (obstacles.isEmpty) {
+    // Direct path if no intermediate nodes exist between columns
+    if (intermediateNodes.isEmpty) {
       final dx = (end.dx - start.dx).abs() * 0.5;
       return Path()
         ..moveTo(start.dx, start.dy)
@@ -234,33 +221,39 @@ class GraphPainter extends CustomPainter {
         );
     }
 
-    // Route cleanly around obstacles through clear corridors
-    final avgObstacleCenterY = obstacles
-            .map((o) => o.position.dy + o.size.height / 2)
-            .reduce((a, b) => a + b) /
-        obstacles.length;
-    final avgEdgeY = (start.dy + end.dy) / 2;
+    // Multi-column spanning edge: route cleanly around intermediate cards through corridors
+    final minTop = intermediateNodes.map((o) => o.position.dy).reduce(min);
+    final maxBottom = intermediateNodes.map((o) => o.position.dy + o.size.height).reduce(max);
+    final firstInterLeft = intermediateNodes.map((o) => o.position.dx).reduce(min);
+    final lastInterRight = intermediateNodes.map((o) => o.position.dx + o.size.width).reduce(max);
 
-    double corridorY;
-    if (avgEdgeY < avgObstacleCenterY) {
-      final minTop = obstacles.map((o) => o.position.dy).reduce(min);
-      corridorY = minTop - 25.0;
-    } else {
-      final maxBottom = obstacles.map((o) => o.position.dy + o.size.height).reduce(max);
-      corridorY = maxBottom + 25.0;
-    }
+    // Channels immediately after start node and before end node
+    final firstChannelX = (start.dx + firstInterLeft) / 2.0;
+    final lastChannelX = (lastInterRight + end.dx) / 2.0;
 
-    final midX = (start.dx + end.dx) / 2;
+    // Decide whether to route above or below intermediate cards
+    final distAbove = (start.dy - minTop).abs() + (end.dy - minTop).abs();
+    final distBelow = (maxBottom - start.dy).abs() + (maxBottom - end.dy).abs();
+    final goAbove = distAbove <= distBelow;
+
+    // Distribute multiple skipping lines across distinct lanes to prevent line overlap
+    final laneOffset = (edge.hashCode.abs() % 4) * 8.0;
+    final corridorY = goAbove ? minTop - 28.0 - laneOffset : maxBottom + 28.0 + laneOffset;
+
+    final dx1 = (firstChannelX - start.dx).abs() * 0.5;
+    final dx2 = (end.dx - lastChannelX).abs() * 0.5;
+
     return Path()
       ..moveTo(start.dx, start.dy)
       ..cubicTo(
-        start.dx + 40, start.dy,
-        midX - 50, corridorY,
-        midX, corridorY,
+        start.dx + dx1, start.dy,
+        firstChannelX - dx1, corridorY,
+        firstChannelX, corridorY,
       )
+      ..lineTo(lastChannelX, corridorY)
       ..cubicTo(
-        midX + 50, corridorY,
-        end.dx - 40, end.dy,
+        lastChannelX + dx2, corridorY,
+        end.dx - dx2, end.dy,
         end.dx, end.dy,
       );
   }
