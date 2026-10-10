@@ -13,7 +13,7 @@ class ScheduleController extends ChangeNotifier {
   bool _isLoading = true;
   Task? _selectedTask;
   Task? _lastAddedTask;
-  final HighlightCriteria _highlightCriteria = HighlightCriteria();
+  final HighlightCriteria _highlightCriteria = HighlightCriteria(incompleteOnly: true);
 
   ScheduleController({StorageService? storageService})
       : _storageService = storageService ?? StorageService() {
