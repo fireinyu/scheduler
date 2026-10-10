@@ -130,6 +130,35 @@ class GraphLayoutEngine {
       return prereqTopIds;
     }
 
+    // Helper to determine if a top-level task is fully completed
+    bool isTaskCompleted(Task t) {
+      if (!t.completed) return false;
+      return schedule.getAllSubtasksRecursively(t).every((s) => s.completed);
+    }
+
+    // Identify which top-level tasks are prerequisites (directly or indirectly) of ANY completed task.
+    // Incomplete tasks that are prerequisites of completed tasks must remain to the left of those completed tasks.
+    final prereqsOfCompleted = <int>{};
+    void markPrereqsOfCompleted(int taskId, Set<int> visiting) {
+      if (visiting.contains(taskId)) return;
+      visiting.add(taskId);
+      final task = topLevelTasks.firstWhere(
+        (t) => t.taskId == taskId,
+        orElse: () => Task(taskId: -1, name: ''),
+      );
+      if (task.taskId == -1) return;
+      for (final pId in getEffectivePrerequisiteTopIds(task)) {
+        prereqsOfCompleted.add(pId);
+        markPrereqsOfCompleted(pId, visiting);
+      }
+    }
+
+    for (final task in topLevelTasks) {
+      if (isTaskCompleted(task)) {
+        markPrereqsOfCompleted(task.taskId, <int>{});
+      }
+    }
+
     // 1. Calculate ranks (levels) for top-level tasks using topological ordering.
     final ranks = <int, int>{};
 
@@ -160,6 +189,68 @@ class GraphLayoutEngine {
 
     for (final task in topLevelTasks) {
       computeRank(task, <int>{});
+    }
+
+    // Make completed tasks appear closer to the left and incomplete tasks appear closer to the right:
+    // Completed tasks (and any prerequisite tasks required by them) occupy earlier ranks on the left.
+    // Incomplete tasks not required by completed tasks are shifted to the right (after completed tasks).
+    final completedTasks = topLevelTasks.where(isTaskCompleted).toList();
+    if (completedTasks.isNotEmpty) {
+      int maxCompletedRank = 0;
+      for (final ct in completedTasks) {
+        final r = ranks[ct.taskId] ?? 0;
+        if (r > maxCompletedRank) maxCompletedRank = r;
+      }
+
+      final incompleteTasksToShift = topLevelTasks
+          .where((t) => !isTaskCompleted(t) && !prereqsOfCompleted.contains(t.taskId))
+          .toList();
+
+      if (incompleteTasksToShift.isNotEmpty) {
+        final shiftedRanks = <int, int>{};
+        for (final t in topLevelTasks) {
+          if (isTaskCompleted(t) || prereqsOfCompleted.contains(t.taskId)) {
+            shiftedRanks[t.taskId] = ranks[t.taskId] ?? 0;
+          }
+        }
+        final shiftedVisiting = <int>{};
+
+        int computeShiftedRank(Task task) {
+          if (shiftedRanks.containsKey(task.taskId)) {
+            return shiftedRanks[task.taskId]!;
+          }
+          if (shiftedVisiting.contains(task.taskId)) {
+            return maxCompletedRank + 1;
+          }
+
+          shiftedVisiting.add(task.taskId);
+          int maxDepRank = maxCompletedRank; // Incomplete tasks start to the right of completed tasks
+
+          final prereqTopIds = getEffectivePrerequisiteTopIds(task);
+          for (final pId in prereqTopIds) {
+            final pTask = topLevelTasks.firstWhere(
+              (t) => t.taskId == pId,
+              orElse: () => task,
+            );
+            if (pTask.taskId != task.taskId) {
+              final r = computeShiftedRank(pTask);
+              if (r > maxDepRank) maxDepRank = r;
+            }
+          }
+
+          shiftedVisiting.remove(task.taskId);
+          final myRank = maxDepRank + 1;
+          shiftedRanks[task.taskId] = myRank;
+          return myRank;
+        }
+
+        for (final task in incompleteTasksToShift) {
+          computeShiftedRank(task);
+        }
+
+        ranks.clear();
+        ranks.addAll(shiftedRanks);
+      }
     }
 
     // Group top-level tasks by rank
@@ -294,10 +385,19 @@ class GraphLayoutEngine {
         prevIndexMap[prevLayer[i].id] = i;
       }
 
+      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+        final cmp = aScore.compareTo(bScore);
+        if (cmp != 0) return cmp;
+        final aComp = a.task != null && isTaskCompleted(a.task!);
+        final bComp = b.task != null && isTaskCompleted(b.task!);
+        if (aComp != bComp) return aComp ? -1 : 1;
+        return a.id.compareTo(b.id);
+      }
+
       currentLayer.sort((a, b) {
         final aScore = _calculateBarycenter(incomingMap[a.id] ?? [], prevIndexMap);
         final bScore = _calculateBarycenter(incomingMap[b.id] ?? [], prevIndexMap);
-        return aScore.compareTo(bScore);
+        return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }
 
@@ -312,10 +412,19 @@ class GraphLayoutEngine {
         nextIndexMap[nextLayer[i].id] = i;
       }
 
+      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+        final cmp = aScore.compareTo(bScore);
+        if (cmp != 0) return cmp;
+        final aComp = a.task != null && isTaskCompleted(a.task!);
+        final bComp = b.task != null && isTaskCompleted(b.task!);
+        if (aComp != bComp) return aComp ? -1 : 1;
+        return a.id.compareTo(b.id);
+      }
+
       currentLayer.sort((a, b) {
         final aScore = _calculateBarycenter(outgoingMap[a.id] ?? [], nextIndexMap);
         final bScore = _calculateBarycenter(outgoingMap[b.id] ?? [], nextIndexMap);
-        return aScore.compareTo(bScore);
+        return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }
 
@@ -330,10 +439,19 @@ class GraphLayoutEngine {
         prevIndexMap[prevLayer[i].id] = i;
       }
 
+      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+        final cmp = aScore.compareTo(bScore);
+        if (cmp != 0) return cmp;
+        final aComp = a.task != null && isTaskCompleted(a.task!);
+        final bComp = b.task != null && isTaskCompleted(b.task!);
+        if (aComp != bComp) return aComp ? -1 : 1;
+        return a.id.compareTo(b.id);
+      }
+
       currentLayer.sort((a, b) {
         final aScore = _calculateBarycenter(incomingMap[a.id] ?? [], prevIndexMap);
         final bScore = _calculateBarycenter(incomingMap[b.id] ?? [], prevIndexMap);
-        return aScore.compareTo(bScore);
+        return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }
 

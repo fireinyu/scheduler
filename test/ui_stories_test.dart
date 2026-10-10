@@ -543,6 +543,53 @@ void main() {
       // Verify canvas width expands with the generous spacing
       expect(result.canvasSize.width, greaterThan(1500.0));
     });
+
+    test('GraphLayoutEngine places completed tasks closer to the left and incomplete tasks closer to the right', () {
+      final schedule = StorageService.getStarterSchedule();
+      final result = GraphLayoutEngine.layout(schedule);
+
+      final task1 = result.nodes['task_1']!; // Completed
+      final task4 = result.nodes['task_4']!; // Completed
+      final task5 = result.nodes['task_5']!; // Incomplete
+      final task8 = result.nodes['task_8']!; // Incomplete
+
+      // Completed tasks appear closer to the left (smaller X)
+      // Incomplete tasks appear closer to the right (larger X)
+      expect(task1.position.dx, lessThan(task4.position.dx));
+      expect(task4.position.dx, lessThan(task5.position.dx));
+      expect(task5.position.dx, lessThan(task8.position.dx));
+
+      // All completed tasks are strictly to the left of incomplete tasks
+      expect(task1.position.dx, lessThan(task5.position.dx));
+      expect(task4.position.dx, lessThan(task8.position.dx));
+
+      // Disconnected branches: incomplete tasks without dependencies start to the right of completed tasks
+      final customSchedule = ScheduleData(
+        tasks: [
+          Task(taskId: 101, name: 'Done Task', completed: true),
+          Task(taskId: 102, name: 'Pending Independent Task', completed: false),
+        ],
+      );
+      final customResult = GraphLayoutEngine.layout(customSchedule);
+      final doneNode = customResult.nodes['task_101']!;
+      final pendingNode = customResult.nodes['task_102']!;
+      expect(
+        doneNode.position.dx,
+        lessThan(pendingNode.position.dx),
+        reason: 'Independent incomplete task must appear to the right of completed task',
+      );
+
+      // Verify User Story 16 invariant: all edges point strictly from left to right
+      for (final edge in result.edges) {
+        final fromNode = result.nodes[edge.fromId]!;
+        final toNode = result.nodes[edge.toId]!;
+        expect(
+          fromNode.position.dx,
+          lessThan(toNode.position.dx),
+          reason: 'All graph edges must point strictly from left to right (${edge.fromId} -> ${edge.toId})',
+        );
+      }
+    });
   });
 
   group('Default Values and Duplicating Tasks User Story', () {
