@@ -34,7 +34,12 @@
     },
     {
       "milestoneId": 2,
-      "name": "v1.3"
+      "name": "v1.3",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 15
+      }
     }
   ],
   "tasks": [
@@ -153,7 +158,7 @@
       "assignees": [
         2
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1
     },
     {
@@ -195,8 +200,120 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 1
+    },
+    {
+      "taskId": 12,
+      "name": "Link stories and contacts in Model",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 11
+      },
+      "milestone": 2,
+      "priority": 2
+    },
+    {
+      "taskId": 13,
+      "name": "Update parser (interface)",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 11
+      },
+      "milestone": 2,
+      "priority": 2,
+      "note": "- interface class/ method to be used by command parsers\n- may need to modify code for existing commands"
+    },
+    {
+      "taskId": 14,
+      "name": "Update parser (implementation)",
+      "dependencies": [
+        13
+      ],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- support multiple index fields\n- support \"...\" w/ spaces"
+    },
+    {
+      "taskId": 15,
+      "name": "Update storage to keep track of story-contact assignments",
+      "dependencies": [
+        12
+      ],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1
+    },
+    {
+      "taskId": 16,
+      "name": "Commands: Assign & unassign stories to contacts",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- assign command\n- unassign command"
+    },
+    {
+      "taskId": 17,
+      "name": "Commands: Update list and liststories to filter by assigned contact/ story",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- check `find` implementation"
+    },
+    {
+      "taskId": 18,
+      "name": "Command: Delete stories",
+      "dependencies": [
+        12,
+        14
+      ],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 2,
+      "priority": 1,
+      "note": "- remove link from both story and contact"
     }
   ]
 }
