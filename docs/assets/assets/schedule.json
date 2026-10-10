@@ -211,7 +211,7 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -314,6 +314,80 @@
       "milestone": 2,
       "priority": 1,
       "note": "- remove link from both story and contact"
+    },
+    {
+      "taskId": 19,
+      "name": "Select 2 user stories for v1.4",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5,
+        3,
+        2,
+        1,
+        4
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 13
+      },
+      "priority": 2
+    },
+    {
+      "taskId": 20,
+      "name": "Interim meeting: select ~5 user stories for v1.4",
+      "dependencies": [
+        19
+      ],
+      "subtasks": [],
+      "assignees": [
+        5,
+        3,
+        2,
+        1,
+        4
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 15
+      },
+      "priority": 1
+    },
+    {
+      "taskId": 21,
+      "name": "Feature specs and use cases for v1.4 features",
+      "dependencies": [
+        20
+      ],
+      "subtasks": [],
+      "assignees": [
+        5,
+        3,
+        2,
+        1,
+        4
+      ],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 17
+      },
+      "priority": 1
+    },
+    {
+      "taskId": 22,
+      "name": "Complete and fix feature specs and use cases for MVP features",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [],
+      "completed": false,
+      "priority": 1,
+      "note": "Not assigned yet"
     }
   ]
 }
