@@ -40,6 +40,15 @@
         "month": 10,
         "day": 15
       }
+    },
+    {
+      "milestoneId": 3,
+      "name": "v1.4",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 22
+      }
     }
   ],
   "tasks": [
@@ -228,7 +237,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -248,7 +257,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- support multiple index fields\n- support \"...\" w/ spaces"
@@ -263,7 +272,7 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1
     },
@@ -278,7 +287,7 @@
       "assignees": [
         3
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- assign command\n- unassign command"
@@ -294,7 +303,7 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- check `find` implementation"
@@ -310,7 +319,7 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- remove link from both story and contact"
@@ -358,34 +367,76 @@
       "priority": 1
     },
     {
-      "taskId": 21,
-      "name": "Feature specs and use cases for v1.4 features",
-      "dependencies": [
-        20
-      ],
-      "subtasks": [],
-      "assignees": [
-        5,
-        3,
-        2,
-        1,
-        4
-      ],
-      "completed": false,
-      "deadline": {
-        "year": 2026,
-        "month": 10,
-        "day": 17
-      },
-      "priority": 1
-    },
-    {
       "taskId": 22,
       "name": "Complete and fix feature specs and use cases for MVP features",
       "dependencies": [],
       "subtasks": [],
       "assignees": [],
       "completed": false,
+      "priority": 1,
+      "note": "Not assigned yet"
+    },
+    {
+      "taskId": 23,
+      "name": "Documentation for v1.4 features",
+      "dependencies": [
+        20
+      ],
+      "subtasks": [
+        {
+          "taskId": 24,
+          "name": "User guide",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 25,
+          "name": "User stories fix (if needed)",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 26,
+          "name": "Use cases",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 27,
+          "name": "Feature specs",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        }
+      ],
+      "assignees": [],
+      "completed": false,
+      "priority": 1,
+      "note": "Not assigned yet"
+    },
+    {
+      "taskId": 28,
+      "name": "v1.3 postmortem",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [],
+      "completed": false,
+      "milestone": 3,
       "priority": 1,
       "note": "Not assigned yet"
     }
