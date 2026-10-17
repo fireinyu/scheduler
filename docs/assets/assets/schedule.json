@@ -336,7 +336,7 @@
         1,
         4
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -439,6 +439,97 @@
       "milestone": 3,
       "priority": 1,
       "note": "Not assigned yet"
+    },
+    {
+      "taskId": 29,
+      "name": "Update DG UML diagrams",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 30,
+          "name": "UI class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 31,
+          "name": "Logic class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 32,
+          "name": "Model class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 33,
+          "name": "Storage class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 34,
+          "name": "\"Assign\" Sequence diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "- Can choose to replace the existing \"delete\" command sequence diagram\n- Alternatively, choose somewhere in DG to insert as a separate diagram"
+        }
+      ],
+      "assignees": [],
+      "completed": false,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 23
+      },
+      "priority": 1,
+      "note": "Optional to update paragraph text"
     }
   ]
 }
