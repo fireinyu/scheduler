@@ -358,7 +358,7 @@
         1,
         4
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -435,7 +435,7 @@
       "dependencies": [],
       "subtasks": [],
       "assignees": [],
-      "completed": false,
+      "completed": true,
       "milestone": 3,
       "priority": 1,
       "note": "Not assigned yet"
@@ -450,7 +450,9 @@
           "name": "UI class diagram",
           "dependencies": [],
           "subtasks": [],
-          "assignees": [],
+          "assignees": [
+            5
+          ],
           "completed": false,
           "deadline": {
             "year": 2026,
@@ -465,7 +467,9 @@
           "name": "Logic class diagram",
           "dependencies": [],
           "subtasks": [],
-          "assignees": [],
+          "assignees": [
+            3
+          ],
           "completed": false,
           "deadline": {
             "year": 2026,
@@ -480,7 +484,9 @@
           "name": "Model class diagram",
           "dependencies": [],
           "subtasks": [],
-          "assignees": [],
+          "assignees": [
+            1
+          ],
           "completed": false,
           "deadline": {
             "year": 2026,
@@ -495,7 +501,9 @@
           "name": "Storage class diagram",
           "dependencies": [],
           "subtasks": [],
-          "assignees": [],
+          "assignees": [
+            4
+          ],
           "completed": false,
           "deadline": {
             "year": 2026,
@@ -510,7 +518,9 @@
           "name": "\"Assign\" Sequence diagram",
           "dependencies": [],
           "subtasks": [],
-          "assignees": [],
+          "assignees": [
+            2
+          ],
           "completed": false,
           "deadline": {
             "year": 2026,
@@ -530,6 +540,109 @@
       },
       "priority": 1,
       "note": "Optional to update paragraph text"
+    },
+    {
+      "taskId": 35,
+      "name": "Followups",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 36,
+          "name": "Model",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 37,
+          "name": "UI",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 38,
+          "name": "Add command",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 39,
+          "name": "Delete command",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 40,
+          "name": "Storage",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 3,
+          "priority": 1
+        }
+      ],
+      "assignees": [],
+      "completed": false,
+      "milestone": 3,
+      "priority": 1
+    },
+    {
+      "taskId": 41,
+      "name": "List refactor",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 3,
+      "priority": 1
+    },
+    {
+      "taskId": 42,
+      "name": "Command shortcuts",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 3,
+      "priority": 1
     }
   ]
 }
