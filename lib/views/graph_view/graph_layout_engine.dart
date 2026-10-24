@@ -1,7 +1,10 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import '../../models/schedule_data.dart';
 import '../../models/task.dart';
+import '../../models/schedule_date.dart';
 import 'graph_models.dart';
 
 class GraphLayoutResult {
@@ -80,12 +83,28 @@ class GraphLayoutEngine {
     return result;
   }
 
-  static GraphLayoutResult layout(ScheduleData schedule) {
+  static GraphLayoutResult layout(
+    ScheduleData schedule, {
+    Map<int, ScheduleDate?>? effectiveDeadlines,
+  }) {
     // Only top-level tasks are graph nodes! Subtasks are nested inside their parent cards.
-    final topLevelTasks = schedule
-        .getAllTasks()
-        .where((t) => schedule.findParentTask(t.taskId) == null)
-        .toList();
+    final topLevelTasks = schedule.tasks;
+    final allTasks = schedule.getAllTasks();
+    final byId = {for (final task in allTasks) task.taskId: task};
+    final topById = {for (final task in topLevelTasks) task.taskId: task};
+    final topParents = <int, Task>{};
+    void indexTree(Task task, Task top) {
+      topParents[task.taskId] = top;
+      for (final subtask in task.subtasks) {
+        indexTree(subtask, top);
+      }
+    }
+
+    for (final task in topLevelTasks) {
+      indexTree(task, task);
+    }
+    final deadlines =
+        effectiveDeadlines ?? schedule.calculateEffectiveDeadlines();
 
     final nodes = <String, GraphNode>{};
     final edges = <GraphEdge>[];
@@ -99,22 +118,19 @@ class GraphLayoutEngine {
     }
 
     // Helper to find the top-level parent task of any task
-    Task findTopLevelParent(Task t) {
-      var current = t;
-      while (true) {
-        final parent = schedule.findParentTask(current.taskId);
-        if (parent == null) return current;
-        current = parent;
-      }
-    }
+    Task findTopLevelParent(Task task) => topParents[task.taskId]!;
 
     // Helper to collect all prerequisite top-level tasks for a top-level task
     // (including dependencies declared on any of its nested subtasks)
+    final prerequisiteCache = <int, Set<int>>{};
     Set<int> getEffectivePrerequisiteTopIds(Task parentTask) {
+      if (prerequisiteCache.containsKey(parentTask.taskId)) {
+        return prerequisiteCache[parentTask.taskId]!;
+      }
       final prereqTopIds = <int>{};
       void collect(Task t) {
         for (final depId in t.dependencies) {
-          final dep = schedule.findTaskById(depId);
+          final dep = byId[depId];
           if (dep != null) {
             final top = findTopLevelParent(dep);
             if (top.taskId != parentTask.taskId) {
@@ -126,36 +142,36 @@ class GraphLayoutEngine {
           collect(sub);
         }
       }
+
       collect(parentTask);
+      prerequisiteCache[parentTask.taskId] = prereqTopIds;
       return prereqTopIds;
     }
 
     // Helper to determine if a top-level task is fully completed
-    bool isTaskCompleted(Task t) {
-      if (!t.completed) return false;
-      return schedule.getAllSubtasksRecursively(t).every((s) => s.completed);
-    }
+    final completionCache = <int, bool>{};
+    bool isTaskCompleted(Task task) => completionCache.putIfAbsent(
+      task.taskId,
+      () => task.completed && task.subtasks.every(isTaskCompleted),
+    );
 
     // Identify which top-level tasks are prerequisites (directly or indirectly) of ANY completed task.
     // Incomplete tasks that are prerequisites of completed tasks must remain to the left of those completed tasks.
     final prereqsOfCompleted = <int>{};
-    void markPrereqsOfCompleted(int taskId, Set<int> visiting) {
-      if (visiting.contains(taskId)) return;
-      visiting.add(taskId);
-      final task = topLevelTasks.firstWhere(
-        (t) => t.taskId == taskId,
-        orElse: () => Task(taskId: -1, name: ''),
-      );
-      if (task.taskId == -1) return;
+    final markedPrerequisites = <int>{};
+    void markPrereqsOfCompleted(int taskId) {
+      if (!markedPrerequisites.add(taskId)) return;
+      final task = topById[taskId];
+      if (task == null) return;
       for (final pId in getEffectivePrerequisiteTopIds(task)) {
         prereqsOfCompleted.add(pId);
-        markPrereqsOfCompleted(pId, visiting);
+        markPrereqsOfCompleted(pId);
       }
     }
 
     for (final task in topLevelTasks) {
       if (isTaskCompleted(task)) {
-        markPrereqsOfCompleted(task.taskId, <int>{});
+        markPrereqsOfCompleted(task.taskId);
       }
     }
 
@@ -171,10 +187,7 @@ class GraphLayoutEngine {
 
       final prereqTopIds = getEffectivePrerequisiteTopIds(task);
       for (final pId in prereqTopIds) {
-        final pTask = topLevelTasks.firstWhere(
-          (t) => t.taskId == pId,
-          orElse: () => task,
-        );
+        final pTask = topById[pId]!;
         if (pTask.taskId != task.taskId) {
           final r = computeRank(pTask, visiting);
           if (r > maxDepRank) maxDepRank = r;
@@ -203,7 +216,10 @@ class GraphLayoutEngine {
       }
 
       final incompleteTasksToShift = topLevelTasks
-          .where((t) => !isTaskCompleted(t) && !prereqsOfCompleted.contains(t.taskId))
+          .where(
+            (t) =>
+                !isTaskCompleted(t) && !prereqsOfCompleted.contains(t.taskId),
+          )
           .toList();
 
       if (incompleteTasksToShift.isNotEmpty) {
@@ -228,10 +244,7 @@ class GraphLayoutEngine {
 
           final prereqTopIds = getEffectivePrerequisiteTopIds(task);
           for (final pId in prereqTopIds) {
-            final pTask = topLevelTasks.firstWhere(
-              (t) => t.taskId == pId,
-              orElse: () => task,
-            );
+            final pTask = topById[pId]!;
             if (pTask.taskId != task.taskId) {
               final r = computeShiftedRank(pTask);
               if (r > maxDepRank) maxDepRank = r;
@@ -286,13 +299,15 @@ class GraphLayoutEngine {
     }
 
     // For each rank r, identify tasks with effective deadlines
-    final maxTaskRank = taskColumns.keys.isEmpty ? 0 : taskColumns.keys.reduce(max);
+    final maxTaskRank = taskColumns.keys.isEmpty
+        ? 0
+        : taskColumns.keys.reduce(max);
     for (int r = 0; r <= maxTaskRank; r++) {
       final tasksInRank = taskColumns[r] ?? [];
       final deadlinesInRank = <String, List<Task>>{};
 
       for (final task in tasksInRank) {
-        final dl = schedule.getEffectiveDeadline(task);
+        final dl = deadlines[task.taskId];
         if (dl != null) {
           final key = dl.formatted;
           deadlinesInRank.putIfAbsent(key, () => []).add(task);
@@ -308,7 +323,7 @@ class GraphLayoutEngine {
         final dlNode = GraphNode(
           id: dlNodeId,
           type: GraphNodeType.deadline,
-          deadline: schedule.getEffectiveDeadline(tasksWithDeadline.first),
+          deadline: deadlines[tasksWithDeadline.first.taskId],
           label: deadlineStr,
           size: const Size(deadlineNodeWidth, deadlineNodeHeight),
         );
@@ -319,24 +334,24 @@ class GraphLayoutEngine {
 
         // Edges: Task -> Deadline Item (points from left to right)
         for (final t in tasksWithDeadline) {
-          edges.add(GraphEdge(
-            fromId: 'task_${t.taskId}',
-            toId: dlNodeId,
-            fromTaskId: t.taskId,
-            type: EdgeType.deadline,
-            label: 'Due by',
-          ));
+          edges.add(
+            GraphEdge(
+              fromId: 'task_${t.taskId}',
+              toId: dlNodeId,
+              fromTaskId: t.taskId,
+              type: EdgeType.deadline,
+              label: 'Due by',
+            ),
+          );
         }
       }
     }
 
     // 4. Create Task Dependency Edges between nodes (subtasks start or end at the subtask directly)
     final addedEdges = <String>{};
-    final allTasks = schedule.getAllTasks();
-
     for (final task in allTasks) {
       for (final depId in task.dependencies) {
-        final prereqTask = schedule.findTaskById(depId);
+        final prereqTask = byId[depId];
         if (prereqTask == null) continue;
 
         final fromTop = findTopLevelParent(prereqTask);
@@ -349,14 +364,16 @@ class GraphLayoutEngine {
           final edgeKey = '${prereqTask.taskId}->${task.taskId}';
           if (!addedEdges.contains(edgeKey)) {
             addedEdges.add(edgeKey);
-            edges.add(GraphEdge(
-              fromId: fromId,
-              toId: toId,
-              fromTaskId: prereqTask.taskId,
-              toTaskId: task.taskId,
-              type: EdgeType.dependency,
-              label: 'requisite',
-            ));
+            edges.add(
+              GraphEdge(
+                fromId: fromId,
+                toId: toId,
+                fromTaskId: prereqTask.taskId,
+                toTaskId: task.taskId,
+                type: EdgeType.dependency,
+                label: 'requisite',
+              ),
+            );
           }
         }
       }
@@ -385,7 +402,12 @@ class GraphLayoutEngine {
         prevIndexMap[prevLayer[i].id] = i;
       }
 
-      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+      int compareWithCompletionTieBreaker(
+        GraphNode a,
+        GraphNode b,
+        double aScore,
+        double bScore,
+      ) {
         final cmp = aScore.compareTo(bScore);
         if (cmp != 0) return cmp;
         final aComp = a.task != null && isTaskCompleted(a.task!);
@@ -394,9 +416,16 @@ class GraphLayoutEngine {
         return a.id.compareTo(b.id);
       }
 
+      final scores = {
+        for (final node in currentLayer)
+          node.id: _calculateBarycenter(
+            incomingMap[node.id] ?? [],
+            prevIndexMap,
+          ),
+      };
       currentLayer.sort((a, b) {
-        final aScore = _calculateBarycenter(incomingMap[a.id] ?? [], prevIndexMap);
-        final bScore = _calculateBarycenter(incomingMap[b.id] ?? [], prevIndexMap);
+        final aScore = scores[a.id]!;
+        final bScore = scores[b.id]!;
         return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }
@@ -412,7 +441,12 @@ class GraphLayoutEngine {
         nextIndexMap[nextLayer[i].id] = i;
       }
 
-      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+      int compareWithCompletionTieBreaker(
+        GraphNode a,
+        GraphNode b,
+        double aScore,
+        double bScore,
+      ) {
         final cmp = aScore.compareTo(bScore);
         if (cmp != 0) return cmp;
         final aComp = a.task != null && isTaskCompleted(a.task!);
@@ -421,9 +455,16 @@ class GraphLayoutEngine {
         return a.id.compareTo(b.id);
       }
 
+      final scores = {
+        for (final node in currentLayer)
+          node.id: _calculateBarycenter(
+            outgoingMap[node.id] ?? [],
+            nextIndexMap,
+          ),
+      };
       currentLayer.sort((a, b) {
-        final aScore = _calculateBarycenter(outgoingMap[a.id] ?? [], nextIndexMap);
-        final bScore = _calculateBarycenter(outgoingMap[b.id] ?? [], nextIndexMap);
+        final aScore = scores[a.id]!;
+        final bScore = scores[b.id]!;
         return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }
@@ -439,7 +480,12 @@ class GraphLayoutEngine {
         prevIndexMap[prevLayer[i].id] = i;
       }
 
-      int compareWithCompletionTieBreaker(GraphNode a, GraphNode b, double aScore, double bScore) {
+      int compareWithCompletionTieBreaker(
+        GraphNode a,
+        GraphNode b,
+        double aScore,
+        double bScore,
+      ) {
         final cmp = aScore.compareTo(bScore);
         if (cmp != 0) return cmp;
         final aComp = a.task != null && isTaskCompleted(a.task!);
@@ -448,9 +494,16 @@ class GraphLayoutEngine {
         return a.id.compareTo(b.id);
       }
 
+      final scores = {
+        for (final node in currentLayer)
+          node.id: _calculateBarycenter(
+            incomingMap[node.id] ?? [],
+            prevIndexMap,
+          ),
+      };
       currentLayer.sort((a, b) {
-        final aScore = _calculateBarycenter(incomingMap[a.id] ?? [], prevIndexMap);
-        final bScore = _calculateBarycenter(incomingMap[b.id] ?? [], prevIndexMap);
+        final aScore = scores[a.id]!;
+        final bScore = scores[b.id]!;
         return compareWithCompletionTieBreaker(a, b, aScore, bScore);
       });
     }

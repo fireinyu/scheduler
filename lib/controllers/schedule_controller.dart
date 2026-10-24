@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/schedule_data.dart';
 import '../models/task.dart';
 import '../models/milestone.dart';
@@ -11,16 +12,22 @@ class ScheduleController extends ChangeNotifier {
   final StorageService _storageService;
   late ScheduleData _schedule;
   bool _isLoading = true;
+  int _scheduleRevision = 0;
   Task? _selectedTask;
   Task? _lastAddedTask;
-  final HighlightCriteria _highlightCriteria = HighlightCriteria();
+  final HighlightCriteria _highlightCriteria = HighlightCriteria(
+    incompleteOnly: true,
+  );
 
   ScheduleController({StorageService? storageService})
-      : _storageService = storageService ?? StorageService() {
+    : _storageService = storageService ?? StorageService() {
     _schedule = StorageService.getStarterSchedule();
   }
 
   ScheduleData get schedule => _schedule;
+
+  /// Changes only when schedule data changes, not selection or highlights.
+  int get scheduleRevision => _scheduleRevision;
   bool get isLoading => _isLoading;
   Task? get selectedTask => _selectedTask;
   HighlightCriteria get highlightCriteria => _highlightCriteria;
@@ -50,6 +57,7 @@ class ScheduleController extends ChangeNotifier {
     } catch (e) {
       _schedule = StorageService.getStarterSchedule();
     } finally {
+      _scheduleRevision++;
       _isLoading = false;
       notifyListeners();
     }
@@ -57,6 +65,7 @@ class ScheduleController extends ChangeNotifier {
 
   /// User story 14: Whenever I add, delete or edit a task, the changes are saved to disk
   Future<void> _saveToDisk() async {
+    _scheduleRevision++;
     await _storageService.saveSchedule(_schedule);
   }
 
@@ -174,7 +183,11 @@ class ScheduleController extends ChangeNotifier {
   }
 
   /// User story 11: Set completion status with cascade support
-  Future<void> setTaskCompletion(Task task, bool completed, {bool cascade = false}) async {
+  Future<void> setTaskCompletion(
+    Task task,
+    bool completed, {
+    bool cascade = false,
+  }) async {
     final target = _schedule.findTaskById(task.taskId);
     if (target == null) return;
 
@@ -200,17 +213,16 @@ class ScheduleController extends ChangeNotifier {
 
   /// User story 5: Add teammate
   Future<void> addTeammate(String name) async {
-    final person = Person(
-      personId: _schedule.nextPersonId,
-      name: name,
-    );
+    final person = Person(personId: _schedule.nextPersonId, name: name);
     _schedule.teammates.add(person);
     await _saveToDisk();
     notifyListeners();
   }
 
   Future<void> updateTeammate(Person person) async {
-    final index = _schedule.teammates.indexWhere((p) => p.personId == person.personId);
+    final index = _schedule.teammates.indexWhere(
+      (p) => p.personId == person.personId,
+    );
     if (index != -1) {
       _schedule.teammates[index].name = person.name;
       await _saveToDisk();
@@ -237,7 +249,9 @@ class ScheduleController extends ChangeNotifier {
   }
 
   Future<void> updateMilestone(Milestone milestone) async {
-    final index = _schedule.milestones.indexWhere((m) => m.milestoneId == milestone.milestoneId);
+    final index = _schedule.milestones.indexWhere(
+      (m) => m.milestoneId == milestone.milestoneId,
+    );
     if (index != -1) {
       _schedule.milestones[index].name = milestone.name;
       _schedule.milestones[index].deadline = milestone.deadline;

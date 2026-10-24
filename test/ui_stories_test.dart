@@ -197,10 +197,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(controller.highlightCriteria.mode, equals(HighlightMode.matchAll));
 
-    // Toggle Incomplete filter
+    // Incomplete tasks are highlighted by default; toggling disables it.
+    expect(controller.highlightCriteria.incompleteOnly, isTrue);
     await tester.tap(find.text('Incomplete tasks only'));
     await tester.pumpAndSettle();
-    expect(controller.highlightCriteria.incompleteOnly, isTrue);
+    expect(controller.highlightCriteria.incompleteOnly, isFalse);
   });
 
   testWidgets('User Story 18: Selecting a task displays the Task Focused Graph View',

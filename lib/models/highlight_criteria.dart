@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'schedule_date.dart';
 import 'task.dart';
 import 'schedule_data.dart';
@@ -58,12 +59,18 @@ class HighlightCriteria {
 
   /// Evaluates which criteria match a given task.
   /// Returns a map of criterion name -> Color for matching criteria.
-  Map<String, Color> getMatchingCriteria(Task task, ScheduleData schedule) {
+  Map<String, Color> getMatchingCriteria(
+    Task task,
+    ScheduleData schedule, {
+    Map<int, ScheduleDate?>? effectiveDeadlines,
+  }) {
     final matches = <String, Color>{};
 
     // 1. Due at or before specified datetime
     if (dueBefore != null) {
-      final taskDl = schedule.getEffectiveDeadline(task);
+      final taskDl = effectiveDeadlines != null
+          ? effectiveDeadlines[task.taskId]
+          : schedule.getEffectiveDeadline(task);
       if (taskDl != null && !taskDl.endInstant.isAfter(dueBefore!.endInstant)) {
         matches['Due ≤ ${dueBefore!.formatted}'] = colorDueBefore;
       }
@@ -73,16 +80,17 @@ class HighlightCriteria {
     if (milestoneId != null) {
       if (task.milestone == milestoneId) {
         final ms = schedule.milestones.cast().firstWhere(
-              (m) => m.milestoneId == milestoneId,
-              orElse: () => null,
-            );
+          (m) => m.milestoneId == milestoneId,
+          orElse: () => null,
+        );
         matches['Milestone: ${ms?.name ?? milestoneId}'] = colorMilestone;
       }
     }
 
     // 3. Incomplete
     if (incompleteOnly) {
-      final isIncomplete = !task.completed ||
+      final isIncomplete =
+          !task.completed ||
           schedule.getAllSubtasksRecursively(task).any((s) => !s.completed);
       if (isIncomplete) {
         matches['Incomplete'] = colorIncomplete;
@@ -91,7 +99,14 @@ class HighlightCriteria {
 
     // 4. Priority at least threshold
     if (minPriority != null) {
-      final effPriority = schedule.getEffectivePriority(task);
+      final deadline = effectiveDeadlines != null
+          ? effectiveDeadlines[task.taskId]
+          : schedule.getEffectiveDeadline(task);
+      final overdue =
+          !task.completed &&
+          deadline != null &&
+          DateTime.now().isAfter(deadline.endInstant);
+      final effPriority = overdue ? 1000000 : (task.priority ?? 0);
       if (effPriority >= minPriority!) {
         matches['Priority ≥ $minPriority'] = colorPriority;
       }
@@ -99,8 +114,11 @@ class HighlightCriteria {
 
     // 5. Assigned to person or set of persons
     if (assigneeIds.isNotEmpty) {
-      final hasAssignee = task.assignees.any((a) => assigneeIds.contains(a)) ||
-          schedule.getAllSubtasksRecursively(task).any((s) => s.assignees.any((a) => assigneeIds.contains(a)));
+      final hasAssignee =
+          task.assignees.any((a) => assigneeIds.contains(a)) ||
+          schedule
+              .getAllSubtasksRecursively(task)
+              .any((s) => s.assignees.any((a) => assigneeIds.contains(a)));
       if (hasAssignee) {
         matches['Assigned Team'] = colorAssignees;
       }
@@ -123,10 +141,18 @@ class HighlightCriteria {
   }
 
   /// Whether a task matches in current mode
-  bool isTaskHighlighted(Task task, ScheduleData schedule) {
+  bool isTaskHighlighted(
+    Task task,
+    ScheduleData schedule, {
+    Map<int, ScheduleDate?>? effectiveDeadlines,
+  }) {
     if (!hasAnyActiveCriteria) return false;
 
-    final matches = getMatchingCriteria(task, schedule);
+    final matches = getMatchingCriteria(
+      task,
+      schedule,
+      effectiveDeadlines: effectiveDeadlines,
+    );
 
     if (mode == HighlightMode.matchAll) {
       // Must match ALL active criteria

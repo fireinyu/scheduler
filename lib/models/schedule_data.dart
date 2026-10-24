@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'person.dart';
 import 'milestone.dart';
 import 'task.dart';
@@ -13,21 +15,26 @@ class ScheduleData {
     List<Person>? teammates,
     List<Milestone>? milestones,
     List<Task>? tasks,
-  })  : teammates = teammates ?? [],
-        milestones = milestones ?? [],
-        tasks = tasks ?? [];
+  }) : teammates = teammates ?? [],
+       milestones = milestones ?? [],
+       tasks = tasks ?? [];
 
   factory ScheduleData.fromJson(Map<String, dynamic> json) {
     return ScheduleData(
-      teammates: (json['teammates'] as List<dynamic>?)
+      teammates:
+          (json['teammates'] as List<dynamic>?)
               ?.map((e) => Person.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           [],
-      milestones: (json['milestones'] as List<dynamic>?)
-              ?.map((e) => Milestone.fromJson(Map<String, dynamic>.from(e as Map)))
+      milestones:
+          (json['milestones'] as List<dynamic>?)
+              ?.map(
+                (e) => Milestone.fromJson(Map<String, dynamic>.from(e as Map)),
+              )
               .toList() ??
           [],
-      tasks: (json['tasks'] as List<dynamic>?)
+      tasks:
+          (json['tasks'] as List<dynamic>?)
               ?.map((e) => Task.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList() ??
           [],
@@ -56,7 +63,10 @@ class ScheduleData {
 
   int get nextMilestoneId {
     if (milestones.isEmpty) return 1;
-    return milestones.map((m) => m.milestoneId).reduce((a, b) => a > b ? a : b) + 1;
+    return milestones
+            .map((m) => m.milestoneId)
+            .reduce((a, b) => a > b ? a : b) +
+        1;
   }
 
   /// Flattens all tasks and subtasks into a single list
@@ -149,13 +159,53 @@ class ScheduleData {
     for (final dep in dependents) {
       final depDeadline = getEffectiveDeadline(dep, Set<int>.from(cycleCheck));
       if (depDeadline != null) {
-        if (minDeadline == null || depDeadline.endInstant.isBefore(minDeadline.endInstant)) {
+        if (minDeadline == null ||
+            depDeadline.endInstant.isBefore(minDeadline.endInstant)) {
           minDeadline = depDeadline;
         }
       }
     }
 
     return minDeadline;
+  }
+
+  /// Resolves all deadlines together, without revisiting every dependency path.
+  /// Explicit deadlines stop inheritance; cycles converge to the earliest
+  /// reachable deadline, and cycles without deadlines remain null.
+  Map<int, ScheduleDate?> calculateEffectiveDeadlines() {
+    final allTasks = getAllTasks();
+    final byId = {for (final task in allTasks) task.taskId: task};
+    final milestoneDeadlines = {
+      for (final milestone in milestones)
+        milestone.milestoneId: milestone.deadline,
+    };
+    final deadlines = <int, ScheduleDate?>{};
+    final pending = Queue<Task>();
+    final queued = <int>{};
+    for (final task in allTasks) {
+      final deadline = task.deadline ?? milestoneDeadlines[task.milestone];
+      deadlines[task.taskId] = deadline;
+      if (deadline != null) {
+        pending.add(task);
+        queued.add(task.taskId);
+      }
+    }
+    while (pending.isNotEmpty) {
+      final task = pending.removeFirst();
+      queued.remove(task.taskId);
+      final deadline = deadlines[task.taskId]!;
+      for (final id in task.dependencies) {
+        final prerequisite = byId[id];
+        if (prerequisite == null || prerequisite.deadline != null) continue;
+        final previous = deadlines[id];
+        if (previous == null ||
+            deadline.endInstant.isBefore(previous.endInstant)) {
+          deadlines[id] = deadline;
+          if (queued.add(id)) pending.add(prerequisite);
+        }
+      }
+    }
+    return deadlines;
   }
 
   /// Glossary: "A task is overdue if the current datetime exceeds its deadline"
@@ -178,7 +228,11 @@ class ScheduleData {
 
   /// User story 8:
   /// "Recursively assigns the milestone to each subtask and requisite task without a milestone"
-  void assignMilestoneRecursively(Task task, int milestoneId, [Set<int>? visited]) {
+  void assignMilestoneRecursively(
+    Task task,
+    int milestoneId, [
+    Set<int>? visited,
+  ]) {
     final seen = visited ?? <int>{};
     if (!seen.add(task.taskId)) return;
 
@@ -307,7 +361,9 @@ class ScheduleData {
   /// User story 13:
   /// - I am warned before deleting a task which is a dependency of another task
   List<Task> getTasksBlockedBy(Task task) {
-    final allSubIds = getAllSubtasksRecursively(task).map((s) => s.taskId).toSet();
+    final allSubIds = getAllSubtasksRecursively(task)
+        .map((s) => s.taskId)
+        .toSet();
     allSubIds.add(task.taskId);
 
     final blocked = <Task>[];
@@ -330,6 +386,7 @@ class ScheduleData {
         collect(sub);
       }
     }
+
     collect(task);
     return list;
   }
@@ -340,7 +397,9 @@ class ScheduleData {
     final task = findTaskById(taskId);
     if (task == null) return;
 
-    final idsToRemove = getAllSubtasksRecursively(task).map((s) => s.taskId).toSet();
+    final idsToRemove = getAllSubtasksRecursively(task)
+        .map((s) => s.taskId)
+        .toSet();
     idsToRemove.add(taskId);
 
     // Remove from parent if subtask, or from root tasks list
