@@ -37,6 +37,10 @@ void main() {
     await tester.pumpWidget(ProjectSchedulerApp(controller: controller));
     await tester.pumpAndSettle();
 
+    // Include completed tasks to inspect starter task #1's note.
+    await tester.tap(find.text('Incomplete Only'));
+    await tester.pumpAndSettle();
+
     // Starter task #1 has first line: "# Architecture Overview", rendered as "Architecture Overview"
     final noteFirstLineFinder = find.text('Architecture Overview');
     expect(noteFirstLineFinder, findsAtLeastNWidgets(1));

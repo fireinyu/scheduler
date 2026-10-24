@@ -39,7 +39,7 @@ void main() {
       expect(find.text('New Task'), findsOneWidget);
 
       // Verify list items render properly
-      expect(find.text('System Architecture & Schema Design'), findsOneWidget);
+      expect(find.text('Interactive DAG Graph Visualizer'), findsOneWidget);
 
       // Verify task filter toolbar on mobile has search and filter chips without overflow
       expect(find.byIcon(Icons.search), findsWidgets);
