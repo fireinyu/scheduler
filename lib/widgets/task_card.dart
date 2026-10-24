@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../controllers/schedule_controller.dart';
 import '../models/task.dart';
 import '../dialogs/task_edit_dialog.dart';
@@ -7,6 +8,9 @@ import 'obsidian_markdown_view.dart';
 
 class TaskCard extends StatefulWidget {
   final Task task;
+
+  /// Matching tasks and their ancestors; null displays the whole hierarchy.
+  final Set<int>? visibleTaskIds;
   final ScheduleController controller;
   final int depth;
   final VoidCallback onInspectInGraph;
@@ -14,6 +18,7 @@ class TaskCard extends StatefulWidget {
   const TaskCard({
     super.key,
     required this.task,
+    this.visibleTaskIds,
     required this.controller,
     this.depth = 0,
     required this.onInspectInGraph,
@@ -32,13 +37,17 @@ class _TaskCardState extends State<TaskCard> {
 
     if (value == true) {
       // Check for incomplete prerequisites and subtasks
-      final incomplete = widget.controller.schedule.getIncompletePrerequisitesAndSubtasks(task);
+      final incomplete = widget.controller.schedule
+          .getIncompletePrerequisitesAndSubtasks(task);
       if (incomplete.isNotEmpty) {
         final proceed = await WarningDialog.show(
           context: context,
           title: 'Mark Task Complete',
           warnings: incomplete
-              .map((t) => "Task '${t.name}' (ID: ${t.taskId}) is still incomplete.")
+              .map(
+                (t) =>
+                    "Task '${t.name}' (ID: ${t.taskId}) is still incomplete.",
+              )
               .toList(),
           proceedLabel: 'Mark All Complete',
           proceedColor: Colors.teal,
@@ -65,8 +74,10 @@ class _TaskCardState extends State<TaskCard> {
         context: context,
         title: 'Delete Dependent Task',
         warnings: blocked
-            .map((t) =>
-                "Task '${t.name}' depends on this task as a requisite. Deleting will remove it as a dependency.")
+            .map(
+              (t) =>
+                  "Task '${t.name}' depends on this task as a requisite. Deleting will remove it as a dependency.",
+            )
             .toList(),
         proceedLabel: 'Delete Anyway',
         proceedColor: Theme.of(context).colorScheme.error,
@@ -91,17 +102,19 @@ class _TaskCardState extends State<TaskCard> {
     // Milestone lookup
     final milestone = task.milestone != null
         ? schedule.milestones.cast().firstWhere(
-              (m) => m.milestoneId == task.milestone,
-              orElse: () => null,
-            )
+            (m) => m.milestoneId == task.milestone,
+            orElse: () => null,
+          )
         : null;
 
     // Teammates lookup
     final assignees = task.assignees
-        .map((id) => schedule.teammates.cast().firstWhere(
-              (p) => p.personId == id,
-              orElse: () => null,
-            ))
+        .map(
+          (id) => schedule.teammates.cast().firstWhere(
+            (p) => p.personId == id,
+            orElse: () => null,
+          ),
+        )
         .whereType<dynamic>()
         .toList();
 
@@ -111,7 +124,12 @@ class _TaskCardState extends State<TaskCard> {
         .whereType<Task>()
         .toList();
 
-    final hasSubtasks = task.subtasks.isNotEmpty;
+    final visibleSubtasks = task.subtasks.where(
+      (sub) =>
+          widget.visibleTaskIds == null ||
+          widget.visibleTaskIds!.contains(sub.taskId),
+    );
+    final hasSubtasks = visibleSubtasks.isNotEmpty;
 
     final screenWidth = MediaQuery.of(context).size.width;
     final isNarrow = screenWidth < 500;
@@ -133,16 +151,16 @@ class _TaskCardState extends State<TaskCard> {
                 color: isOverdue
                     ? theme.colorScheme.error
                     : task.completed
-                        ? Colors.green.withValues(alpha: 0.5)
-                        : theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
+                    ? Colors.green.withValues(alpha: 0.5)
+                    : theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
                 width: isOverdue ? 2 : 1,
               ),
             ),
             color: task.completed
                 ? theme.colorScheme.surfaceContainerLow.withValues(alpha: 0.6)
                 : isOverdue
-                    ? theme.colorScheme.errorContainer.withValues(alpha: 0.08)
-                    : theme.colorScheme.surface,
+                ? theme.colorScheme.errorContainer.withValues(alpha: 0.08)
+                : theme.colorScheme.surface,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Column(
@@ -158,7 +176,9 @@ class _TaskCardState extends State<TaskCard> {
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           icon: Icon(
-                            _subtasksExpanded ? Icons.expand_more : Icons.chevron_right,
+                            _subtasksExpanded
+                                ? Icons.expand_more
+                                : Icons.chevron_right,
                             size: 20,
                           ),
                           onPressed: () {
@@ -170,7 +190,11 @@ class _TaskCardState extends State<TaskCard> {
                       else if (widget.depth > 0)
                         const Padding(
                           padding: EdgeInsets.only(right: 6),
-                          child: Icon(Icons.subdirectory_arrow_right, size: 16, color: Colors.grey),
+                          child: Icon(
+                            Icons.subdirectory_arrow_right,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                         ),
 
                       // Checkbox
@@ -186,8 +210,12 @@ class _TaskCardState extends State<TaskCard> {
                           task.name,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            decoration: task.completed ? TextDecoration.lineThrough : null,
-                            color: task.completed ? theme.colorScheme.outline : null,
+                            decoration: task.completed
+                                ? TextDecoration.lineThrough
+                                : null,
+                            color: task.completed
+                                ? theme.colorScheme.outline
+                                : null,
                           ),
                         ),
                       ),
@@ -195,7 +223,10 @@ class _TaskCardState extends State<TaskCard> {
                       // Priority Chip
                       if (isOverdue)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.error,
                             borderRadius: BorderRadius.circular(12),
@@ -203,10 +234,16 @@ class _TaskCardState extends State<TaskCard> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.error_outline, size: 13, color: Colors.white),
+                              const Icon(
+                                Icons.error_outline,
+                                size: 13,
+                                color: Colors.white,
+                              ),
                               const SizedBox(width: 4),
                               Text(
-                                isNarrow ? 'OVERDUE' : 'OVERDUE (Highest Priority)',
+                                isNarrow
+                                    ? 'OVERDUE'
+                                    : 'OVERDUE (Highest Priority)',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 11,
@@ -218,7 +255,10 @@ class _TaskCardState extends State<TaskCard> {
                         )
                       else if (effectivePriority > 0)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(12),
@@ -317,13 +357,20 @@ class _TaskCardState extends State<TaskCard> {
                             value: 'delete',
                             child: Row(
                               children: [
-                                Icon(Icons.delete_outline,
-                                    size: 18, color: Theme.of(context).colorScheme.error),
+                                Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Delete Task',
-                                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .error,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -345,10 +392,15 @@ class _TaskCardState extends State<TaskCard> {
                         // Deadline
                         if (effectiveDeadline != null)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: isOverdue
-                                  ? theme.colorScheme.errorContainer.withValues(alpha: 0.4)
+                                  ? theme.colorScheme.errorContainer.withValues(
+                                      alpha: 0.4,
+                                    )
                                   : theme.colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -358,7 +410,9 @@ class _TaskCardState extends State<TaskCard> {
                                 Icon(
                                   Icons.event_outlined,
                                   size: 13,
-                                  color: isOverdue ? theme.colorScheme.error : theme.colorScheme.primary,
+                                  color: isOverdue
+                                      ? theme.colorScheme.error
+                                      : theme.colorScheme.primary,
                                 ),
                                 const SizedBox(width: 4),
                                 Flexible(
@@ -369,7 +423,9 @@ class _TaskCardState extends State<TaskCard> {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
-                                      color: isOverdue ? theme.colorScheme.error : null,
+                                      color: isOverdue
+                                          ? theme.colorScheme.error
+                                          : null,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -381,15 +437,23 @@ class _TaskCardState extends State<TaskCard> {
                         // Milestone
                         if (milestone != null)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.5),
+                              color: theme.colorScheme.tertiaryContainer
+                                  .withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.flag, size: 12, color: theme.colorScheme.tertiary),
+                                Icon(
+                                  Icons.flag,
+                                  size: 12,
+                                  color: theme.colorScheme.tertiary,
+                                ),
                                 const SizedBox(width: 4),
                                 Flexible(
                                   child: Text(
@@ -397,7 +461,8 @@ class _TaskCardState extends State<TaskCard> {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
-                                      color: theme.colorScheme.onTertiaryContainer,
+                                      color:
+                                          theme.colorScheme.onTertiaryContainer,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -409,7 +474,10 @@ class _TaskCardState extends State<TaskCard> {
                         // Workload
                         if (task.workload != null)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(6),
@@ -428,21 +496,26 @@ class _TaskCardState extends State<TaskCard> {
                           ),
 
                         // Assignee chips
-                        ...assignees.map((person) => Tooltip(
-                              message: 'Assigned to ${person.name}',
-                              child: CircleAvatar(
-                                radius: 10,
-                                backgroundColor: theme.colorScheme.primaryContainer,
-                                child: Text(
-                                  person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: theme.colorScheme.onPrimaryContainer,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        ...assignees.map(
+                          (person) => Tooltip(
+                            message: 'Assigned to ${person.name}',
+                            child: CircleAvatar(
+                              radius: 10,
+                              backgroundColor:
+                                  theme.colorScheme.primaryContainer,
+                              child: Text(
+                                person.name.isNotEmpty
+                                    ? person.name[0].toUpperCase()
+                                    : '?',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            )),
+                            ),
+                          ),
+                        ),
 
                         // Requisite Dependencies Tag
                         if (requisiteTasks.isNotEmpty)
@@ -450,9 +523,13 @@ class _TaskCardState extends State<TaskCard> {
                             message:
                                 'Needs: ${requisiteTasks.map((t) => t.name).join(", ")}',
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest,
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(
@@ -487,9 +564,11 @@ class _TaskCardState extends State<TaskCard> {
           if (hasSubtasks && _subtasksExpanded)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: task.subtasks
+              children: visibleSubtasks
                   .map(
                     (sub) => TaskCard(
+                      key: ValueKey(sub.taskId),
+                      visibleTaskIds: widget.visibleTaskIds,
                       task: sub,
                       controller: widget.controller,
                       depth: widget.depth + 1,

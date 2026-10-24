@@ -33,7 +33,7 @@ void main() {
     expect(find.text('Interactive Graph View'), findsOneWidget);
 
     // Verify starter tasks rendered
-    expect(find.text('System Architecture & Schema Design'), findsOneWidget);
+    expect(find.text('Interactive DAG Graph Visualizer'), findsOneWidget);
     expect(find.text('New Task'), findsOneWidget);
   });
 }
