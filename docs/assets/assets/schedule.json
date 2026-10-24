@@ -40,6 +40,15 @@
         "month": 10,
         "day": 15
       }
+    },
+    {
+      "milestoneId": 3,
+      "name": "v1.4",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 22
+      }
     }
   ],
   "tasks": [
@@ -211,7 +220,7 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -228,7 +237,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "deadline": {
         "year": 2026,
         "month": 10,
@@ -248,7 +257,7 @@
       "assignees": [
         1
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- support multiple index fields\n- support \"...\" w/ spaces"
@@ -263,7 +272,7 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1
     },
@@ -278,7 +287,7 @@
       "assignees": [
         3
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- assign command\n- unassign command"
@@ -294,7 +303,7 @@
       "assignees": [
         4
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- check `find` implementation"
@@ -310,10 +319,330 @@
       "assignees": [
         5
       ],
-      "completed": false,
+      "completed": true,
       "milestone": 2,
       "priority": 1,
       "note": "- remove link from both story and contact"
+    },
+    {
+      "taskId": 19,
+      "name": "Select 2 user stories for v1.4",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5,
+        3,
+        2,
+        1,
+        4
+      ],
+      "completed": true,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 13
+      },
+      "priority": 2
+    },
+    {
+      "taskId": 20,
+      "name": "Interim meeting: select ~5 user stories for v1.4",
+      "dependencies": [
+        19
+      ],
+      "subtasks": [],
+      "assignees": [
+        5,
+        3,
+        2,
+        1,
+        4
+      ],
+      "completed": true,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 15
+      },
+      "priority": 1
+    },
+    {
+      "taskId": 22,
+      "name": "Complete and fix feature specs and use cases for MVP features",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [],
+      "completed": false,
+      "priority": 1,
+      "note": "Not assigned yet"
+    },
+    {
+      "taskId": 23,
+      "name": "Documentation for v1.4 features",
+      "dependencies": [
+        20
+      ],
+      "subtasks": [
+        {
+          "taskId": 24,
+          "name": "User guide",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 25,
+          "name": "User stories fix (if needed)",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 26,
+          "name": "Use cases",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        },
+        {
+          "taskId": 27,
+          "name": "Feature specs",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [],
+          "completed": false,
+          "priority": 1,
+          "note": "Not assigned yet"
+        }
+      ],
+      "assignees": [],
+      "completed": false,
+      "priority": 1,
+      "note": "Not assigned yet"
+    },
+    {
+      "taskId": 28,
+      "name": "v1.3 postmortem",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [],
+      "completed": true,
+      "milestone": 3,
+      "priority": 1,
+      "note": "Not assigned yet"
+    },
+    {
+      "taskId": 29,
+      "name": "Update DG UML diagrams",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 30,
+          "name": "UI class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": true,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 31,
+          "name": "Logic class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": true,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 32,
+          "name": "Model class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": true,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 33,
+          "name": "Storage class diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": true,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "Optional to update paragraph text"
+        },
+        {
+          "taskId": 34,
+          "name": "\"Assign\" Sequence diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": true,
+          "deadline": {
+            "year": 2026,
+            "month": 10,
+            "day": 23
+          },
+          "priority": 1,
+          "note": "- Can choose to replace the existing \"delete\" command sequence diagram\n- Alternatively, choose somewhere in DG to insert as a separate diagram"
+        }
+      ],
+      "assignees": [],
+      "completed": true,
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 23
+      },
+      "priority": 1,
+      "note": "Optional to update paragraph text"
+    },
+    {
+      "taskId": 35,
+      "name": "Followups",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 36,
+          "name": "Model",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": true,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 37,
+          "name": "UI",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": true,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 38,
+          "name": "Add command",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": true,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 39,
+          "name": "Delete command",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": true,
+          "milestone": 3,
+          "priority": 1
+        },
+        {
+          "taskId": 40,
+          "name": "Storage",
+          "dependencies": [
+            36
+          ],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": true,
+          "milestone": 3,
+          "priority": 1
+        }
+      ],
+      "assignees": [],
+      "completed": true,
+      "milestone": 3,
+      "priority": 1
+    },
+    {
+      "taskId": 41,
+      "name": "List refactor",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        2
+      ],
+      "completed": true,
+      "milestone": 3,
+      "priority": 1
+    },
+    {
+      "taskId": 42,
+      "name": "Command shortcuts",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": true,
+      "milestone": 3,
+      "priority": 1
     }
   ]
 }
