@@ -49,6 +49,15 @@
         "month": 10,
         "day": 22
       }
+    },
+    {
+      "milestoneId": 4,
+      "name": "v1.5",
+      "deadline": {
+        "year": 2026,
+        "month": 10,
+        "day": 29
+      }
     }
   ],
   "tasks": [
@@ -367,16 +376,6 @@
       "priority": 1
     },
     {
-      "taskId": 22,
-      "name": "Complete and fix feature specs and use cases for MVP features",
-      "dependencies": [],
-      "subtasks": [],
-      "assignees": [],
-      "completed": false,
-      "priority": 1,
-      "note": "Not assigned yet"
-    },
-    {
       "taskId": 23,
       "name": "Documentation for v1.4 features",
       "dependencies": [
@@ -389,7 +388,7 @@
           "dependencies": [],
           "subtasks": [],
           "assignees": [],
-          "completed": false,
+          "completed": true,
           "priority": 1,
           "note": "Not assigned yet"
         },
@@ -399,7 +398,7 @@
           "dependencies": [],
           "subtasks": [],
           "assignees": [],
-          "completed": false,
+          "completed": true,
           "priority": 1,
           "note": "Not assigned yet"
         },
@@ -409,7 +408,7 @@
           "dependencies": [],
           "subtasks": [],
           "assignees": [],
-          "completed": false,
+          "completed": true,
           "priority": 1,
           "note": "Not assigned yet"
         },
@@ -419,13 +418,13 @@
           "dependencies": [],
           "subtasks": [],
           "assignees": [],
-          "completed": false,
+          "completed": true,
           "priority": 1,
           "note": "Not assigned yet"
         }
       ],
       "assignees": [],
-      "completed": false,
+      "completed": true,
       "priority": 1,
       "note": "Not assigned yet"
     },
@@ -642,6 +641,2239 @@
       ],
       "completed": true,
       "milestone": 3,
+      "priority": 1
+    },
+    {
+      "taskId": 43,
+      "name": "Feature: Add Contact",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 44,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 45,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 46,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 47,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 48,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 49,
+          "name": "DG: UML diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 50,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 51,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 52,
+      "name": "Feature: Delete Contact",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 53,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 54,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 55,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 56,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 57,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 58,
+      "name": "Feature: Edit Contact",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 59,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 60,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 61,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 62,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 63,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 64,
+      "name": "Feature: Find Contact",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 65,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 66,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 67,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 68,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 69,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 70,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 71,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 72,
+      "name": "Feature: List Contact",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 73,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 74,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 75,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 76,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 77,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 78,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 79,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 80,
+      "name": "Feature: Add Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 81,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 82,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 83,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 84,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 85,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 86,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 87,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 88,
+      "name": "Feature: Delete Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 89,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 90,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 91,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 92,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 93,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 94,
+      "name": "Feature: Edit Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 95,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 96,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 97,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 98,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 99,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 100,
+      "name": "Feature: Find Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 101,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 102,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 103,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 104,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 105,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 106,
+          "name": "DG: UML diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 107,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 108,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 109,
+      "name": "Feature: List Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 110,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 111,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 112,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 113,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 114,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 115,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 116,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 117,
+      "name": "Feature: Assign Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 118,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 119,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 120,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 121,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 122,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 123,
+          "name": "DG: UML diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 124,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 125,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 126,
+      "name": "Feature: Unassign Story",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 127,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 128,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 129,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 130,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 131,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            4
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 132,
+      "name": "Feature: Add Followup",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 133,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 134,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 135,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 136,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 137,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 138,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 139,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 140,
+      "name": "Feature: Delete Followup",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 141,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 142,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 143,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 144,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 145,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 146,
+      "name": "Feature: Edit Followup",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 147,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 148,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 149,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 150,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 151,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 152,
+      "name": "Feature: Find Followup",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 153,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 154,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 155,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 156,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 157,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 158,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 159,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            1
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 160,
+      "name": "Feature: List Followup",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 161,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 162,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 163,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 164,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 165,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 166,
+          "name": "DG: UML diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 167,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 168,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 169,
+      "name": "Feature: Help",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 170,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 171,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 172,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 173,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 174,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 175,
+      "name": "Feature: Shortcut (List)",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 176,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 177,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 178,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 179,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 180,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 181,
+          "name": "DG: UML diagram",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 182,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 183,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 184,
+      "name": "Feature: Shortcut (Add)",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 185,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 186,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 187,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 188,
+          "name": "DG: Use case",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 189,
+          "name": "DG: Detailed specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 190,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 191,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 192,
+      "name": "Feature: Unshortcut",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 193,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 194,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 195,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 196,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 197,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            2
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 198,
+      "name": "Feature: Exit",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 199,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 200,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 201,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 202,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 203,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            5
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 204,
+      "name": "Feature: Clear",
+      "dependencies": [],
+      "subtasks": [
+        {
+          "taskId": 205,
+          "name": "Alpha test",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1,
+          "note": "Bug report: Bugs + features (at least 5)"
+        },
+        {
+          "taskId": 206,
+          "name": "DG: User story",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 207,
+          "name": "DG: Basic specification",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 208,
+          "name": "UG: Screenshot",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        },
+        {
+          "taskId": 209,
+          "name": "UG: Description",
+          "dependencies": [],
+          "subtasks": [],
+          "assignees": [
+            3
+          ],
+          "completed": false,
+          "milestone": 4,
+          "priority": 1
+        }
+      ],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 210,
+      "name": "Test cases: storage",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 211,
+      "name": "Test cases: model",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 212,
+      "name": "Test cases: logic",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 213,
+      "name": "Code quality: storage",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 214,
+      "name": "Code quality: model",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 215,
+      "name": "Code quality: logic",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        1
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 216,
+      "name": "Code quality: UI",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 217,
+      "name": "Index.md",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 218,
+      "name": "Instructions for manual testing",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        4
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1,
+      "note": "Include test inputs the tester can copy-paste into the app"
+    },
+    {
+      "taskId": 219,
+      "name": "Glossary",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 220,
+      "name": "Address AB3 caveats",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        2
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1,
+      "note": "- Double-clicking the JAR file might not work on some systems.\n- The app will not work properly if it is placed in a write-protected folder.\n- Mac users using the fullscreen mode for secondary dialogs (e.g., the help dialog) might encounter unexpected behaviors."
+    },
+    {
+      "taskId": 221,
+      "name": "Remove irrelevant stuff from UG",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1,
+      "note": "e.g. suggestions"
+    },
+    {
+      "taskId": 222,
+      "name": "User stories for unimplemented features",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 223,
+      "name": "Implement text wrap (if possible)",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        5
+      ],
+      "completed": false,
+      "milestone": 4,
+      "priority": 1
+    },
+    {
+      "taskId": 224,
+      "name": "List followup",
+      "dependencies": [],
+      "subtasks": [],
+      "assignees": [
+        3
+      ],
+      "completed": false,
+      "milestone": 4,
       "priority": 1
     }
   ]
