@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../../controllers/schedule_controller.dart';
 import '../../models/task.dart';
+import '../../models/schedule_date.dart';
 import '../../dialogs/task_edit_dialog.dart';
 import '../../widgets/obsidian_markdown_view.dart';
 import 'deadline_node_widget.dart';
@@ -43,7 +45,8 @@ class TaskFocusedGraphView extends StatelessWidget {
     final dependents = schedule.getTasksDependingOn(currentTask.taskId);
 
     // 5. Effective deadline
-    final deadline = schedule.getEffectiveDeadline(currentTask);
+    final deadlines = schedule.calculateEffectiveDeadlines();
+    final deadline = deadlines[currentTask.taskId];
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = screenWidth < 800;
 
@@ -130,6 +133,7 @@ class TaskFocusedGraphView extends StatelessWidget {
                     child: _buildRelatedTaskCard(
                       context,
                       parent,
+                      effectiveDeadlines: deadlines,
                       relationBadge: 'Parent Task',
                       badgeColor: theme.colorScheme.tertiary,
                       isDependency: false,
@@ -137,7 +141,10 @@ class TaskFocusedGraphView extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   const Center(
-                    child: Icon(Icons.keyboard_double_arrow_down, color: Colors.grey),
+                    child: Icon(
+                      Icons.keyboard_double_arrow_down,
+                      color: Colors.grey,
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -162,21 +169,28 @@ class TaskFocusedGraphView extends StatelessWidget {
                           'No requisite dependencies.',
                         )
                       else
-                        ...prerequisites.map((req) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: _buildRelatedTaskCard(
-                                context,
-                                req,
-                                relationBadge: 'Pre-requisite (Needs First)',
-                                badgeColor: theme.colorScheme.primary,
-                                isDependency: true,
-                              ),
-                            )),
+                        ...prerequisites.map(
+                          (req) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: _buildRelatedTaskCard(
+                              context,
+                              req,
+                              effectiveDeadlines: deadlines,
+                              relationBadge: 'Pre-requisite (Needs First)',
+                              badgeColor: theme.colorScheme.primary,
+                              isDependency: true,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   const Center(
-                    child: Icon(Icons.arrow_downward, color: Colors.grey, size: 22),
+                    child: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.grey,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(height: 12),
 
@@ -185,7 +199,11 @@ class TaskFocusedGraphView extends StatelessWidget {
 
                   const SizedBox(height: 12),
                   const Center(
-                    child: Icon(Icons.arrow_downward, color: Colors.grey, size: 22),
+                    child: Icon(
+                      Icons.arrow_downward,
+                      color: Colors.grey,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(height: 12),
 
@@ -207,16 +225,20 @@ class TaskFocusedGraphView extends StatelessWidget {
                           'No tasks currently depend on this task.',
                         )
                       else
-                        ...dependents.map((dep) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: _buildRelatedTaskCard(
-                                context,
-                                dep,
-                                relationBadge: 'Dependent (Blocked until complete)',
-                                badgeColor: Colors.deepOrange,
-                                isDependency: false,
-                              ),
-                            )),
+                        ...dependents.map(
+                          (dep) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: _buildRelatedTaskCard(
+                              context,
+                              dep,
+                              effectiveDeadlines: deadlines,
+                              relationBadge:
+                                  'Dependent (Blocked until complete)',
+                              badgeColor: Colors.deepOrange,
+                              isDependency: false,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ] else ...[
@@ -244,32 +266,48 @@ class TaskFocusedGraphView extends StatelessWidget {
                                 'No requisite dependencies.',
                               )
                             else
-                              ...prerequisites.map((req) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: _buildRelatedTaskCard(
-                                      context,
-                                      req,
-                                      relationBadge: 'Pre-requisite (Needs First)',
-                                      badgeColor: theme.colorScheme.primary,
-                                      isDependency: true,
-                                    ),
-                                  )),
+                              ...prerequisites.map(
+                                (req) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _buildRelatedTaskCard(
+                                    context,
+                                    req,
+                                    effectiveDeadlines: deadlines,
+                                    relationBadge:
+                                        'Pre-requisite (Needs First)',
+                                    badgeColor: theme.colorScheme.primary,
+                                    isDependency: true,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
                       const Padding(
                         padding: EdgeInsets.only(top: 80),
-                        child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
                       ),
 
                       // Center: The Focused Task
                       Expanded(
                         flex: 4,
-                        child: _buildFocusedTaskCard(context, currentTask, deadline),
+                        child: _buildFocusedTaskCard(
+                          context,
+                          currentTask,
+                          deadline,
+                        ),
                       ),
                       const Padding(
                         padding: EdgeInsets.only(top: 80),
-                        child: Icon(Icons.arrow_forward, color: Colors.grey, size: 20),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
                       ),
 
                       // Right Column: Dependent Tasks
@@ -292,16 +330,20 @@ class TaskFocusedGraphView extends StatelessWidget {
                                 'No tasks currently depend on this task.',
                               )
                             else
-                              ...dependents.map((dep) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: _buildRelatedTaskCard(
-                                      context,
-                                      dep,
-                                      relationBadge: 'Dependent (Blocked until complete)',
-                                      badgeColor: Colors.deepOrange,
-                                      isDependency: false,
-                                    ),
-                                  )),
+                              ...dependents.map(
+                                (dep) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _buildRelatedTaskCard(
+                                    context,
+                                    dep,
+                                    effectiveDeadlines: deadlines,
+                                    relationBadge:
+                                        'Dependent (Blocked until complete)',
+                                    badgeColor: Colors.deepOrange,
+                                    isDependency: false,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -313,7 +355,10 @@ class TaskFocusedGraphView extends StatelessWidget {
                 // Bottom: Subtasks (if any)
                 if (subtasks.isNotEmpty) ...[
                   const Center(
-                    child: Icon(Icons.keyboard_double_arrow_down, color: Colors.grey),
+                    child: Icon(
+                      Icons.keyboard_double_arrow_down,
+                      color: Colors.grey,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _buildSectionHeader(
@@ -332,6 +377,7 @@ class TaskFocusedGraphView extends StatelessWidget {
                         child: _buildRelatedTaskCard(
                           context,
                           sub,
+                          effectiveDeadlines: deadlines,
                           relationBadge: 'Subtask',
                           badgeColor: theme.colorScheme.secondary,
                           isDependency: false,
@@ -381,7 +427,11 @@ class TaskFocusedGraphView extends StatelessWidget {
             ),
             child: Text(
               '$count',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -393,10 +443,12 @@ class TaskFocusedGraphView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+          color: Theme.of(context).colorScheme.outlineVariant
+              .withValues(alpha: 0.5),
         ),
       ),
       child: Center(
@@ -416,17 +468,22 @@ class TaskFocusedGraphView extends StatelessWidget {
   Widget _buildFocusedTaskCard(
     BuildContext context,
     Task currentTask,
-    dynamic deadline,
+    ScheduleDate? deadline,
   ) {
     final theme = Theme.of(context);
-    final isOverdue = controller.schedule.isTaskOverdue(currentTask);
+    final isOverdue =
+        !currentTask.completed &&
+        deadline != null &&
+        DateTime.now().isAfter(deadline.endInstant);
 
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isOverdue ? theme.colorScheme.error : theme.colorScheme.primary,
+          color: isOverdue
+              ? theme.colorScheme.error
+              : theme.colorScheme.primary,
           width: 2.5,
         ),
       ),
@@ -444,7 +501,10 @@ class TaskFocusedGraphView extends StatelessWidget {
               alignment: WrapAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(12),
@@ -452,7 +512,11 @@ class TaskFocusedGraphView extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.center_focus_strong, size: 14, color: Colors.white),
+                      Icon(
+                        Icons.center_focus_strong,
+                        size: 14,
+                        color: Colors.white,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         'FOCUSED TASK',
@@ -468,15 +532,26 @@ class TaskFocusedGraphView extends StatelessWidget {
                 if (currentTask.completed)
                   const Chip(
                     avatar: Icon(Icons.check, size: 16, color: Colors.green),
-                    label: Text('Completed', style: TextStyle(color: Colors.green, fontSize: 12)),
+                    label: Text(
+                      'Completed',
+                      style: TextStyle(color: Colors.green, fontSize: 12),
+                    ),
                   )
                 else if (isOverdue)
                   Chip(
-                    avatar: const Icon(Icons.error_outline, size: 16, color: Colors.white),
+                    avatar: const Icon(
+                      Icons.error_outline,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                     backgroundColor: theme.colorScheme.error,
                     label: const Text(
                       'OVERDUE',
-                      style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
               ],
@@ -486,7 +561,9 @@ class TaskFocusedGraphView extends StatelessWidget {
             // Title
             Text(
               '#${currentTask.taskId} ${currentTask.name}',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -494,7 +571,11 @@ class TaskFocusedGraphView extends StatelessWidget {
             if (deadline != null) ...[
               Row(
                 children: [
-                  const Icon(Icons.arrow_forward, size: 16, color: Colors.deepOrange),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 16,
+                    color: Colors.deepOrange,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: DeadlineNodeWidget(
@@ -528,10 +609,13 @@ class TaskFocusedGraphView extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Markdown Note
-            if (currentTask.note != null && currentTask.note!.trim().isNotEmpty) ...[
+            if (currentTask.note != null &&
+                currentTask.note!.trim().isNotEmpty) ...[
               Text(
                 'Note',
-                style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               ObsidianMarkdownView(
@@ -549,12 +633,13 @@ class TaskFocusedGraphView extends StatelessWidget {
   Widget _buildRelatedTaskCard(
     BuildContext context,
     Task relatedTask, {
+    required Map<int, ScheduleDate?> effectiveDeadlines,
     required String relationBadge,
     required Color badgeColor,
     required bool isDependency,
   }) {
     final theme = Theme.of(context);
-    final deadline = controller.schedule.getEffectiveDeadline(relatedTask);
+    final deadline = effectiveDeadlines[relatedTask.taskId];
 
     return InkWell(
       onTap: () => onSelectNewFocus(relatedTask),
@@ -584,7 +669,10 @@ class TaskFocusedGraphView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: badgeColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
@@ -603,12 +691,20 @@ class TaskFocusedGraphView extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Icon(
-                  relatedTask.completed ? Icons.check_circle : Icons.radio_button_unchecked,
+                  relatedTask.completed
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
                   size: 14,
-                  color: relatedTask.completed ? Colors.green : theme.colorScheme.outline,
+                  color: relatedTask.completed
+                      ? Colors.green
+                      : theme.colorScheme.outline,
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.arrow_forward_ios, size: 11, color: Colors.grey),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 11,
+                  color: Colors.grey,
+                ),
               ],
             ),
             const SizedBox(height: 6),
@@ -616,7 +712,9 @@ class TaskFocusedGraphView extends StatelessWidget {
               '#${relatedTask.taskId} ${relatedTask.name}',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                decoration: relatedTask.completed ? TextDecoration.lineThrough : null,
+                decoration: relatedTask.completed
+                    ? TextDecoration.lineThrough
+                    : null,
               ),
             ),
             if (deadline != null) ...[
@@ -627,7 +725,10 @@ class TaskFocusedGraphView extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     deadline.formatted,
-                    style: TextStyle(fontSize: 11, color: theme.colorScheme.outline),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
                 ],
               ),

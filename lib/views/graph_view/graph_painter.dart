@@ -1,22 +1,19 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import 'graph_models.dart';
 
-class GraphPainter extends CustomPainter {
+/// Geometry is prepared once per layout, independently of theme and viewport.
+class GraphGeometry {
   final Map<String, GraphNode> nodes;
   final List<GraphEdge> edges;
-  final ColorScheme colorScheme;
+  late final List<GraphRoute> routes = _prepareRoutes();
 
-  GraphPainter({
-    required this.nodes,
-    required this.edges,
-    required this.colorScheme,
-  });
+  GraphGeometry({required this.nodes, required this.edges});
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (nodes.isEmpty || edges.isEmpty) return;
-
+  List<GraphRoute> _prepareRoutes() {
+    final routes = <GraphRoute>[];
     // 1. Group outgoing and incoming edges to distribute connection anchors
     // along the boundaries of each node, avoiding overlapping edges.
     final outEdgesMap = <String, List<GraphEdge>>{};
@@ -77,39 +74,17 @@ class GraphPainter extends CustomPainter {
       );
 
       // Compute obstacle-avoiding path that routes cleanly
-      final path = _computeObstacleAvoidingPath(start, end, fromNode, toNode, edge);
+      final path = _computeObstacleAvoidingPath(
+        start,
+        end,
+        fromNode,
+        toNode,
+        edge,
+      );
 
-      // Draw according to edge type (all edges are arrows pointing from left to right)
-      switch (edge.type) {
-        case EdgeType.dependency:
-          final paint = Paint()
-            ..color = colorScheme.primary.withValues(alpha: 0.85)
-            ..strokeWidth = 2.0
-            ..style = PaintingStyle.stroke;
-          canvas.drawPath(path, paint);
-          _drawArrowhead(canvas, end, color: colorScheme.primary);
-          break;
-
-        case EdgeType.subtask:
-          final paint = Paint()
-            ..color = colorScheme.tertiary.withValues(alpha: 0.8)
-            ..strokeWidth = 1.8
-            ..style = PaintingStyle.stroke;
-          _drawDashedPath(canvas, path, paint, dashWidth: 6, dashSpace: 4);
-          _drawArrowhead(canvas, end, color: colorScheme.tertiary);
-          break;
-
-        case EdgeType.deadline:
-          // User Story 16: All edges point from left to right to deadlines
-          final paint = Paint()
-            ..color = Colors.deepOrange.withValues(alpha: 0.85)
-            ..strokeWidth = 2.0
-            ..style = PaintingStyle.stroke;
-          _drawDashedPath(canvas, path, paint, dashWidth: 4, dashSpace: 3);
-          _drawArrowhead(canvas, end, color: Colors.deepOrange);
-          break;
-      }
+      routes.add(GraphRoute(edge.type, path, end));
     }
+    return routes;
   }
 
   Offset _getAnchorPoint({
@@ -156,10 +131,14 @@ class GraphPainter extends CustomPainter {
 
     // Default to parent task anchor
     final sameTargetEdges = groupEdges
-        .where((e) => (isSource ? e.fromTaskId : e.toTaskId) == node.task?.taskId)
+        .where(
+          (e) => (isSource ? e.fromTaskId : e.toTaskId) == node.task?.taskId,
+        )
         .toList();
     final index = sameTargetEdges.indexOf(edge);
-    final count = sameTargetEdges.isNotEmpty ? sameTargetEdges.length : groupEdges.length;
+    final count = sameTargetEdges.isNotEmpty
+        ? sameTargetEdges.length
+        : groupEdges.length;
     final parentIdx = index >= 0 ? index : groupEdges.indexOf(edge);
 
     if (node.task != null && node.task!.subtasks.isNotEmpty) {
@@ -191,11 +170,7 @@ class GraphPainter extends CustomPainter {
       final loopLeft = min(start.dx, end.dx) - 30.0;
       return Path()
         ..moveTo(start.dx, start.dy)
-        ..cubicTo(
-          loopLeft, start.dy,
-          loopLeft, end.dy,
-          end.dx, end.dy,
-        );
+        ..cubicTo(loopLeft, start.dy, loopLeft, end.dy, end.dx, end.dy);
     }
 
     // Identify intermediate nodes whose horizontal span lies strictly between start and end columns
@@ -214,18 +189,20 @@ class GraphPainter extends CustomPainter {
       final dx = (end.dx - start.dx).abs() * 0.5;
       return Path()
         ..moveTo(start.dx, start.dy)
-        ..cubicTo(
-          start.dx + dx, start.dy,
-          end.dx - dx, end.dy,
-          end.dx, end.dy,
-        );
+        ..cubicTo(start.dx + dx, start.dy, end.dx - dx, end.dy, end.dx, end.dy);
     }
 
     // Multi-column spanning edge: route cleanly around intermediate cards through corridors
     final minTop = intermediateNodes.map((o) => o.position.dy).reduce(min);
-    final maxBottom = intermediateNodes.map((o) => o.position.dy + o.size.height).reduce(max);
-    final firstInterLeft = intermediateNodes.map((o) => o.position.dx).reduce(min);
-    final lastInterRight = intermediateNodes.map((o) => o.position.dx + o.size.width).reduce(max);
+    final maxBottom = intermediateNodes
+        .map((o) => o.position.dy + o.size.height)
+        .reduce(max);
+    final firstInterLeft = intermediateNodes
+        .map((o) => o.position.dx)
+        .reduce(min);
+    final lastInterRight = intermediateNodes
+        .map((o) => o.position.dx + o.size.width)
+        .reduce(max);
 
     // Channels immediately after start node and before end node
     final firstChannelX = (start.dx + firstInterLeft) / 2.0;
@@ -238,7 +215,9 @@ class GraphPainter extends CustomPainter {
 
     // Distribute multiple skipping lines across distinct lanes to prevent line overlap
     final laneOffset = (edge.hashCode.abs() % 4) * 8.0;
-    final corridorY = goAbove ? minTop - 28.0 - laneOffset : maxBottom + 28.0 + laneOffset;
+    final corridorY = goAbove
+        ? minTop - 28.0 - laneOffset
+        : maxBottom + 28.0 + laneOffset;
 
     final dx1 = (firstChannelX - start.dx).abs() * 0.5;
     final dx2 = (end.dx - lastChannelX).abs() * 0.5;
@@ -246,16 +225,97 @@ class GraphPainter extends CustomPainter {
     return Path()
       ..moveTo(start.dx, start.dy)
       ..cubicTo(
-        start.dx + dx1, start.dy,
-        firstChannelX - dx1, corridorY,
-        firstChannelX, corridorY,
+        start.dx + dx1,
+        start.dy,
+        firstChannelX - dx1,
+        corridorY,
+        firstChannelX,
+        corridorY,
       )
       ..lineTo(lastChannelX, corridorY)
       ..cubicTo(
-        lastChannelX + dx2, corridorY,
-        end.dx - dx2, end.dy,
-        end.dx, end.dy,
+        lastChannelX + dx2,
+        corridorY,
+        end.dx - dx2,
+        end.dy,
+        end.dx,
+        end.dy,
       );
+  }
+}
+
+class GraphRoute {
+  final EdgeType type;
+  final Path path;
+  final Offset end;
+  late final Rect bounds = path
+      .getBounds()
+      .expandToInclude(Rect.fromCenter(center: end, width: 22, height: 14))
+      .inflate(2);
+  // Dash extraction is relatively expensive on long edges. Do it only once,
+  // when the route first becomes visible.
+  late final Path strokePath = _buildStrokePath();
+
+  GraphRoute(this.type, this.path, this.end);
+
+  Path _buildStrokePath() {
+    if (type == EdgeType.dependency) return path;
+    final dashWidth = type == EdgeType.deadline ? 4.0 : 6.0;
+    final dashSpace = type == EdgeType.deadline ? 3.0 : 4.0;
+    final dashed = Path();
+    for (final metric in path.computeMetrics()) {
+      for (
+        double distance = 0;
+        distance < metric.length;
+        distance += dashWidth + dashSpace
+      ) {
+        dashed.addPath(
+          metric.extractPath(
+            distance,
+            min(distance + dashWidth, metric.length),
+          ),
+          Offset.zero,
+        );
+      }
+    }
+    return dashed;
+  }
+}
+
+class GraphPainter extends CustomPainter {
+  final GraphGeometry geometry;
+  final ColorScheme colorScheme;
+  final Rect? viewport;
+
+  GraphPainter({
+    required this.geometry,
+    required this.colorScheme,
+    this.viewport,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final colors = {
+      EdgeType.dependency: colorScheme.primary,
+      EdgeType.subtask: colorScheme.tertiary,
+      EdgeType.deadline: Colors.deepOrange,
+    };
+    final paints = {
+      for (final type in EdgeType.values)
+        type: Paint()
+          ..color = colors[type]!.withValues(
+            alpha: type == EdgeType.subtask ? 0.8 : 0.85,
+          )
+          ..strokeWidth = type == EdgeType.subtask ? 1.8 : 2.0
+          ..style = PaintingStyle.stroke,
+    };
+    for (final route in geometry.routes) {
+      // Test the whole curve, so connections crossing the viewport still show
+      // even when both endpoint cards are offscreen.
+      if (viewport != null && !route.bounds.overlaps(viewport!)) continue;
+      canvas.drawPath(route.strokePath, paints[route.type]!);
+      _drawArrowhead(canvas, route.end, color: colors[route.type]!);
+    }
   }
 
   void _drawArrowhead(
@@ -280,24 +340,9 @@ class GraphPainter extends CustomPainter {
     canvas.drawPath(arrowPath, arrowPaint);
   }
 
-  void _drawDashedPath(
-    Canvas canvas,
-    Path path,
-    Paint paint, {
-    required double dashWidth,
-    required double dashSpace,
-  }) {
-    for (final metric in path.computeMetrics()) {
-      double distance = 0.0;
-      while (distance < metric.length) {
-        final length = min(dashWidth, metric.length - distance);
-        final segment = metric.extractPath(distance, distance + length);
-        canvas.drawPath(segment, paint);
-        distance += dashWidth + dashSpace;
-      }
-    }
-  }
-
   @override
-  bool shouldRepaint(covariant GraphPainter oldDelegate) => true;
+  bool shouldRepaint(covariant GraphPainter oldDelegate) =>
+      geometry != oldDelegate.geometry ||
+      colorScheme != oldDelegate.colorScheme ||
+      viewport != oldDelegate.viewport;
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../../models/task.dart';
+import '../../models/schedule_date.dart';
 import '../../models/person.dart';
 import '../../models/schedule_data.dart';
 import '../../models/highlight_criteria.dart';
@@ -8,6 +10,7 @@ import 'graph_layout_engine.dart';
 class TaskNodeWidget extends StatelessWidget {
   final Task task;
   final ScheduleData schedule;
+  final Map<int, ScheduleDate?>? effectiveDeadlines;
   final HighlightCriteria highlightCriteria;
   final bool isSelected;
   final int? selectedTaskId;
@@ -20,6 +23,7 @@ class TaskNodeWidget extends StatelessWidget {
     super.key,
     required this.task,
     required this.schedule,
+    this.effectiveDeadlines,
     required this.highlightCriteria,
     this.isSelected = false,
     this.selectedTaskId,
@@ -32,30 +36,45 @@ class TaskNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isOverdue = schedule.isTaskOverdue(task);
-    final deadline = schedule.getEffectiveDeadline(task);
+    final deadline = effectiveDeadlines != null
+        ? effectiveDeadlines![task.taskId]
+        : schedule.getEffectiveDeadline(task);
+    final isOverdue =
+        !task.completed &&
+        deadline != null &&
+        DateTime.now().isAfter(deadline.endInstant);
 
     // Milestone
     final milestone = task.milestone != null
         ? schedule.milestones.cast().firstWhere(
-              (m) => m.milestoneId == task.milestone,
-              orElse: () => null,
-            )
+            (m) => m.milestoneId == task.milestone,
+            orElse: () => null,
+          )
         : null;
 
     // Assignees
     final assignees = task.assignees
-        .map((id) => schedule.teammates.cast<Person?>().firstWhere(
-              (p) => p?.personId == id,
-              orElse: () => null,
-            ))
+        .map(
+          (id) => schedule.teammates.cast<Person?>().firstWhere(
+            (p) => p?.personId == id,
+            orElse: () => null,
+          ),
+        )
         .whereType<Person>()
         .toList();
 
     // Highlighting logic (User story 17)
     final hasActiveCriteria = highlightCriteria.hasAnyActiveCriteria;
-    final isHighlighted = highlightCriteria.isTaskHighlighted(task, schedule);
-    final matchingCriteria = highlightCriteria.getMatchingCriteria(task, schedule);
+    final isHighlighted = highlightCriteria.isTaskHighlighted(
+      task,
+      schedule,
+      effectiveDeadlines: effectiveDeadlines,
+    );
+    final matchingCriteria = highlightCriteria.getMatchingCriteria(
+      task,
+      schedule,
+      effectiveDeadlines: effectiveDeadlines,
+    );
 
     // Dim if filters active but this task does not match
     final opacity = (!hasActiveCriteria || isHighlighted) ? 1.0 : 0.35;
@@ -97,7 +116,10 @@ class TaskNodeWidget extends StatelessWidget {
     } else if (isOverdue) {
       border = Border.all(color: theme.colorScheme.error, width: 1.8);
     } else if (task.completed) {
-      border = Border.all(color: Colors.green.withValues(alpha: 0.6), width: 1.2);
+      border = Border.all(
+        color: Colors.green.withValues(alpha: 0.6),
+        width: 1.2,
+      );
     } else {
       border = Border.all(color: theme.colorScheme.outlineVariant, width: 1);
     }
@@ -116,7 +138,8 @@ class TaskNodeWidget extends StatelessWidget {
               : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: border,
-          boxShadow: shadows ??
+          boxShadow:
+              shadows ??
               [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -127,7 +150,10 @@ class TaskNodeWidget extends StatelessWidget {
         ),
         child: hasSubtasks
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -139,13 +165,21 @@ class TaskNodeWidget extends StatelessWidget {
                         onDoubleTap: onDoubleTap,
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2,
+                            vertical: 2,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildHeaderRow(theme, isOverdue),
                               const SizedBox(height: 6),
-                              _buildMiddleRow(theme, deadline, milestone, isOverdue),
+                              _buildMiddleRow(
+                                theme,
+                                deadline,
+                                milestone,
+                                isOverdue,
+                              ),
                               const SizedBox(height: 6),
                               _buildBottomRow(
                                 theme,
@@ -165,7 +199,9 @@ class TaskNodeWidget extends StatelessWidget {
                     Divider(
                       height: 12,
                       thickness: 1,
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
 
                     // Subtasks Header
@@ -192,7 +228,9 @@ class TaskNodeWidget extends StatelessWidget {
                     const SizedBox(height: 6),
 
                     // Nested Subtask Cards (Smaller cards showing ONLY name and person assignment)
-                    ...task.subtasks.map((sub) => _buildSubtaskCard(context, sub, 0)),
+                    ...task.subtasks.map(
+                      (sub) => _buildSubtaskCard(context, sub, 0),
+                    ),
                   ],
                 ),
               )
@@ -203,7 +241,10 @@ class TaskNodeWidget extends StatelessWidget {
                   onDoubleTap: onDoubleTap,
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -234,14 +275,14 @@ class TaskNodeWidget extends StatelessWidget {
           task.completed
               ? Icons.check_circle
               : isOverdue
-                  ? Icons.error
-                  : Icons.radio_button_unchecked,
+              ? Icons.error
+              : Icons.radio_button_unchecked,
           size: 16,
           color: task.completed
               ? Colors.green
               : isOverdue
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.outline,
+              ? theme.colorScheme.error
+              : theme.colorScheme.outline,
         ),
         const SizedBox(width: 6),
         Expanded(
@@ -291,7 +332,9 @@ class TaskNodeWidget extends StatelessWidget {
           Icon(
             Icons.event,
             size: 13,
-            color: isOverdue ? theme.colorScheme.error : theme.colorScheme.primary,
+            color: isOverdue
+                ? theme.colorScheme.error
+                : theme.colorScheme.primary,
           ),
           const SizedBox(width: 4),
           Text(
@@ -311,7 +354,9 @@ class TaskNodeWidget extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
               decoration: BoxDecoration(
-                color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.6),
+                color: theme.colorScheme.tertiaryContainer.withValues(
+                  alpha: 0.6,
+                ),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -341,21 +386,25 @@ class TaskNodeWidget extends StatelessWidget {
     return Row(
       children: [
         // Assignee circles
-        ...assignees.take(3).map((p) => Padding(
-              padding: const EdgeInsets.only(right: 3),
-              child: CircleAvatar(
-                radius: 9,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Text(
-                  p.name.isNotEmpty ? p.name[0].toUpperCase() : '?',
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimaryContainer,
+        ...assignees
+            .take(3)
+            .map(
+              (p) => Padding(
+                padding: const EdgeInsets.only(right: 3),
+                child: CircleAvatar(
+                  radius: 9,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  child: Text(
+                    p.name.isNotEmpty ? p.name[0].toUpperCase() : '?',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
                   ),
                 ),
               ),
-            )),
+            ),
         if (task.workload != null) ...[
           const SizedBox(width: 4),
           Text(
@@ -413,10 +462,12 @@ class TaskNodeWidget extends StatelessWidget {
 
     // Person assignment
     final subAssignees = subtask.assignees
-        .map((id) => schedule.teammates.cast<Person?>().firstWhere(
-              (p) => p?.personId == id,
-              orElse: () => null,
-            ))
+        .map(
+          (id) => schedule.teammates.cast<Person?>().firstWhere(
+            (p) => p?.personId == id,
+            orElse: () => null,
+          ),
+        )
         .whereType<Person>()
         .toList();
 
@@ -439,7 +490,9 @@ class TaskNodeWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSubSelected
                   ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35)
-                  : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+                  : theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.45,
+                    ),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: isSubSelected
@@ -507,7 +560,9 @@ class TaskNodeWidget extends StatelessWidget {
                 // Recursive sub-subtasks (if any)
                 if (subtask.subtasks.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  ...subtask.subtasks.map((child) => _buildSubtaskCard(context, child, depth + 1)),
+                  ...subtask.subtasks.map(
+                    (child) => _buildSubtaskCard(context, child, depth + 1),
+                  ),
                 ],
               ],
             ),
