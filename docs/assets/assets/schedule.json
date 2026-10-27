@@ -1110,7 +1110,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1,
           "note": "Bug report: Bugs + features (at least 5)"
@@ -1208,7 +1208,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1,
           "note": "Bug report: Bugs + features (at least 5)"
@@ -1356,7 +1356,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1,
           "note": "Bug report: Bugs + features (at least 5)"
@@ -2092,7 +2092,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1,
           "note": "Bug report: Bugs + features (at least 5)"
@@ -2558,7 +2558,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1,
           "note": "Bug report: Bugs + features (at least 5)"
