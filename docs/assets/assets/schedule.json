@@ -1171,7 +1171,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         },
@@ -1183,7 +1183,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         }
@@ -1245,7 +1245,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         },
@@ -1257,7 +1257,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         }
@@ -1429,7 +1429,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         },
@@ -1441,7 +1441,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         }
@@ -2165,7 +2165,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         },
@@ -2177,7 +2177,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         }
@@ -2595,7 +2595,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         },
@@ -2607,7 +2607,7 @@
           "assignees": [
             5
           ],
-          "completed": false,
+          "completed": true,
           "milestone": 4,
           "priority": 1
         }
